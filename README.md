@@ -1,17 +1,16 @@
 # BeTwin-AI
 
-BeTwin-AI is a deep learning project for predicting the **Remaining Useful Life (RUL)** of aircraft engines using multivariate time-series sensor data from the NASA C-MAPSS dataset.  
-The current version implements a complete end-to-end **training pipeline** using an LSTM-based model.
+BeTwin-AI is a deep learning project for predicting the Remaining Useful Life (RUL) of aircraft engines using multivariate time-series sensor data from the NASA C-MAPSS dataset.
+The project implements an end-to-end pipeline for training an LSTM model and serving predictions through a lightweight Flask inference API.
 
 ## Project Status
 
-- Implemented data loading and preprocessing
+- Data loading and preprocessing
 - RUL label generation
 - Feature scaling and sequence creation
 - LSTM model training
 - Model and scaler persistence
-
-Future updates will include evaluation metrics, inference pipeline, visualization, and support for additional datasets.
+- Inference API for real-time RUL prediction
 
 ## Project Structure
 
@@ -25,42 +24,83 @@ BeTwin-AI/
 │ ├── config.py
 │ ├── preprocessing.py
 │ ├── model.py
-│ └── train.py
+│ ├── train.py
+│ └── app.py
 ├── requirements.txt
 ├── README.md
 └── .gitignore
 
 ## Dataset
 
-NASA C-MAPSS Turbofan Engine Degradation Dataset (FD001).
+NASA C-MAPSS Turbofan Engine Degradation Dataset (FD001 subset).
 
 ## Model
 
 - LSTM-based regression model
-- Input: Fixed-length sensor sequences
-- Output: Continuous RUL prediction
+- Input: fixed-length multivariate sensor sequences
+- Output: continuous RUL value
 - Loss: Mean Squared Error
 - Optimizer: Adam
 
 ## How to Run
 
-Install dependencies:
+Install dependencies
 
-```bash
 pip install -r requirements.txt
 
-Run training from project root:
+Train the model (from project root)
 
 python src/train.py
 
-Trained artifacts are saved in the results/ directory.
+The trained model and scaler are saved in the results/ directory.
 
-Notes
+## Run the Inference API
 
-Generated files such as trained models and scalers are excluded from version control.
+Start the API server
 
-Authors:
+python src/app.py
+
+The service runs at
+
+http://127.0.0.1:5000
+
+Health check
+
+Open in browser
+
+http://127.0.0.1:5000/
+
+## Predict RUL
+
+Endpoint
+
+POST /predict
+
+Expected JSON body
+
+{
+"sensor_data": [30 x N sensor matrix]
+}
+
+Example (PowerShell)
+
+$body=@{sensor_data=(1..30|%{,@(0..23|%{0})})}|ConvertTo-Json -Compress
+Invoke-RestMethod http://127.0.0.1:5000/predict -Method POST -ContentType application/json -Body $body
+
+Response
+
+{
+"predicted_RUL": 1.57
+}
+
+## Notes
+
+- The API expects exactly 30 time steps per request.
+- The number of features must match the training configuration.
+- Generated artifacts such as trained models and scalers are excluded from version control using .gitignore.
+
+## Authors
+
 Riddhima Rajput
 Diksha Sharma
 Charvi Mittal
-```

@@ -1,0 +1,462 @@
+{% extends "base.html" %}
+{% block title %}BeTwin-AI | Aircraft Health Monitor{% endblock %}
+
+{% block content %}
+
+<!-- ========================================================
+     HERO SECTION
+======================================================== -->
+<section class="relative min-h-[92vh] flex items-center overflow-hidden">
+
+  <!-- Background ambient glows -->
+  <div class="absolute -top-40 -left-40 w-[600px] h-[600px] bg-purple-900/20 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-pink-900/15 rounded-full blur-3xl pointer-events-none"></div>
+
+  <!-- Animated dots / stars -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div id="stars-container"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 py-16 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+    <!-- ===== LEFT — HEADLINE ===== -->
+    <div class="relative z-10">
+      <div class="inline-flex items-center gap-2 px-4 py-2 bg-purple-900/30 border border-purple-700/40 rounded-full mb-6">
+        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+        <span class="orbitron text-purple-300 text-xs tracking-widest uppercase">System Online — Live Monitoring</span>
+      </div>
+
+      <h1 class="orbitron font-black text-5xl md:text-6xl leading-tight mb-6">
+        <span class="block text-white">Predict Before</span>
+        <span class="block bg-gradient-to-r from-purple-400 via-pink-400 to-purple-300 bg-clip-text text-transparent">
+          Failure Strikes.
+        </span>
+      </h1>
+
+      <p class="text-gray-300 text-xl leading-relaxed mb-4 font-semibold">
+        Your aircraft's engine has a story —
+        <span class="text-purple-400">BeTwin-AI reads it.</span>
+      </p>
+
+      <p class="text-gray-500 text-base leading-relaxed mb-10 max-w-lg">
+        Harnessing the power of <strong class="text-white">Digital Twin technology</strong> and
+        deep learning, we create a living virtual mirror of every turbofan engine —
+        continuously predicting its <strong class="text-white">Remaining Useful Life</strong>
+        so your fleet never faces an unexpected shutdown.
+      </p>
+
+      <!-- Stats row -->
+      <div class="flex flex-wrap gap-8 mb-10">
+        <div>
+          <div class="orbitron text-3xl font-black text-purple-400">21</div>
+          <div class="text-gray-500 text-xs tracking-widest uppercase mt-1">Sensor Inputs</div>
+        </div>
+        <div class="w-px bg-purple-800/40"></div>
+        <div>
+          <div class="orbitron text-3xl font-black text-pink-400">LSTM</div>
+          <div class="text-gray-500 text-xs tracking-widest uppercase mt-1">Deep Learning</div>
+        </div>
+        <div class="w-px bg-purple-800/40"></div>
+        <div>
+          <div class="orbitron text-3xl font-black text-purple-400">RUL</div>
+          <div class="text-gray-500 text-xs tracking-widest uppercase mt-1">Prediction Engine</div>
+        </div>
+      </div>
+
+      <!-- CTAs -->
+      <div class="flex flex-wrap gap-4">
+        <a href="/dashboard"
+           class="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500
+                  rounded-full text-white orbitron font-bold tracking-widest uppercase text-sm
+                  transition-all duration-300 shadow-xl shadow-purple-900/60 hover:shadow-purple-500/50
+                  hover:scale-105">
+          Launch Dashboard
+        </a>
+        <a href="/about"
+           class="px-8 py-4 border border-purple-600/60 hover:border-purple-400
+                  rounded-full text-purple-300 hover:text-white orbitron font-bold
+                  tracking-widest uppercase text-sm transition-all duration-300 hover:bg-purple-900/20">
+          Learn More
+        </a>
+      </div>
+    </div>
+
+    <!-- ===== RIGHT — ANIMATED AIRCRAFT DIAGRAM ===== -->
+    <div class="relative flex items-center justify-center min-h-[480px]">
+
+      <!-- Outer radar ring 3 -->
+      <div class="absolute w-[440px] h-[440px] rounded-full border border-purple-800/20 animate-spin"
+           style="animation-duration:20s"></div>
+
+      <!-- Outer radar ring 2 -->
+      <div class="absolute w-[360px] h-[360px] rounded-full border border-purple-700/25 animate-spin"
+           style="animation-duration:14s; animation-direction:reverse"></div>
+
+      <!-- Outer radar ring 1 -->
+      <div class="absolute w-[280px] h-[280px] rounded-full border border-purple-600/30 animate-spin"
+           style="animation-duration:9s"></div>
+
+      <!-- Radar sweep -->
+      <div class="absolute w-[280px] h-[280px] rounded-full overflow-hidden">
+        <div class="radar-sweep absolute inset-0"></div>
+      </div>
+
+      <!-- Inner pulse ring -->
+      <div class="absolute w-[120px] h-[120px] rounded-full border-2 border-purple-500/40 animate-ping"
+           style="animation-duration:2.5s"></div>
+      <div class="absolute w-[80px] h-[80px] rounded-full bg-purple-800/20 border border-purple-500/50 blur-sm"></div>
+
+      <!-- Orbiting dot on ring 1 -->
+      <div class="absolute w-[280px] h-[280px] rounded-full animate-spin" style="animation-duration:9s">
+        <span class="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-purple-400 rounded-full shadow-lg shadow-purple-400"></span>
+      </div>
+      <!-- Orbiting dot on ring 2 -->
+      <div class="absolute w-[360px] h-[360px] rounded-full animate-spin" style="animation-duration:14s; animation-direction:reverse">
+        <span class="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-2 bg-pink-400 rounded-full shadow-lg shadow-pink-400"></span>
+        <span class="absolute top-1/2 -right-1.5 -translate-y-1/2 w-2 h-2 bg-pink-500 rounded-full"></span>
+      </div>
+
+      <!-- ===== AIRCRAFT SVG ===== -->
+      <div class="relative z-20 aircraft-float">
+        <svg width="260" height="200" viewBox="0 0 260 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+          <!-- Engine glow aura -->
+          <ellipse cx="68" cy="102" rx="22" ry="14" fill="#a855f7" opacity="0.15" class="animate-pulse"/>
+          <ellipse cx="192" cy="98" rx="22" ry="14" fill="#a855f7" opacity="0.12" class="animate-pulse"/>
+
+          <!-- Main fuselage -->
+          <path d="M30 100 Q 80 60 160 90 Q 210 100 240 95 Q 230 105 160 112 Q 80 140 30 100 Z"
+                fill="url(#fuselage-grad)" stroke="#a855f7" stroke-width="1"/>
+
+          <!-- Cockpit bubble -->
+          <path d="M200 92 Q 220 90 238 95 Q 218 105 200 108 Z"
+                fill="url(#cockpit-grad)" stroke="#c084fc" stroke-width="0.5"/>
+
+          <!-- Top main wing -->
+          <path d="M100 90 Q 120 50 190 55 Q 175 80 100 90 Z"
+                fill="url(#wing-grad)" stroke="#9333ea" stroke-width="0.8" opacity="0.9"/>
+          <!-- Bottom main wing -->
+          <path d="M100 112 Q 120 150 190 145 Q 175 120 100 112 Z"
+                fill="url(#wing-grad)" stroke="#9333ea" stroke-width="0.8" opacity="0.9"/>
+
+          <!-- Tail fin -->
+          <path d="M55 100 Q 40 70 65 72 Q 70 88 75 100 Z"
+                fill="url(#tail-grad)" stroke="#7c3aed" stroke-width="0.8"/>
+          <path d="M55 100 Q 40 130 65 128 Q 70 114 75 100 Z"
+                fill="url(#tail-grad)" stroke="#7c3aed" stroke-width="0.8"/>
+
+          <!-- Left engine pod -->
+          <ellipse cx="68" cy="72" rx="18" ry="7" fill="#1e0040" stroke="#a855f7" stroke-width="1"/>
+          <ellipse cx="54" cy="72" rx="7" ry="5" fill="url(#exhaust-grad)"/>
+          <!-- Right engine pod -->
+          <ellipse cx="68" cy="128" rx="18" ry="7" fill="#1e0040" stroke="#a855f7" stroke-width="1"/>
+          <ellipse cx="54" cy="128" rx="7" ry="5" fill="url(#exhaust-grad)"/>
+
+          <!-- Engine exhaust streaks -->
+          <line x1="47" y1="70" x2="22" y2="68" stroke="#a855f7" stroke-width="1.5" opacity="0.5" class="exhaust-line"/>
+          <line x1="47" y1="74" x2="18" y2="72" stroke="#c084fc" stroke-width="1" opacity="0.4" class="exhaust-line"/>
+          <line x1="47" y1="126" x2="22" y2="128" stroke="#a855f7" stroke-width="1.5" opacity="0.5" class="exhaust-line"/>
+          <line x1="47" y1="130" x2="18" y2="132" stroke="#c084fc" stroke-width="1" opacity="0.4" class="exhaust-line"/>
+
+          <!-- Window row -->
+          <circle cx="170" cy="98" r="3.5" fill="#c084fc" opacity="0.8"/>
+          <circle cx="182" cy="97" r="3" fill="#c084fc" opacity="0.7"/>
+          <circle cx="193" cy="97" r="2.5" fill="#c084fc" opacity="0.6"/>
+
+          <!-- Wing light tip -->
+          <circle cx="188" cy="57" r="3" fill="#ec4899" class="animate-pulse"/>
+          <circle cx="188" cy="143" r="3" fill="#ec4899" class="animate-pulse" style="animation-delay:0.5s"/>
+
+          <!-- Gradients -->
+          <defs>
+            <linearGradient id="fuselage-grad" x1="30" y1="100" x2="240" y2="100" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#2d0060"/>
+              <stop offset="50%" stop-color="#1a0030"/>
+              <stop offset="100%" stop-color="#0f0020"/>
+            </linearGradient>
+            <linearGradient id="cockpit-grad" x1="200" y1="92" x2="238" y2="108" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#4c1d95" stop-opacity="0.4"/>
+            </linearGradient>
+            <linearGradient id="wing-grad" x1="100" y1="60" x2="190" y2="60" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#2d0060"/>
+              <stop offset="100%" stop-color="#6b21a8" stop-opacity="0.6"/>
+            </linearGradient>
+            <linearGradient id="tail-grad" x1="40" y1="80" x2="75" y2="100" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#4c1d95"/>
+              <stop offset="100%" stop-color="#1e003c"/>
+            </linearGradient>
+            <radialGradient id="exhaust-grad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ec4899"/>
+              <stop offset="100%" stop-color="#7c3aed"/>
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <!-- Floating metric cards -->
+      <!-- Card: Engine A -->
+      <div class="info-card-float absolute top-4 right-4 bg-black/80 border border-purple-700/50 rounded-xl px-4 py-3
+                  backdrop-blur-md glow-border min-w-[140px]"
+           style="animation-delay:0s">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+          <span class="orbitron text-[10px] text-gray-400 uppercase tracking-widest">Engine A</span>
+        </div>
+        <div class="orbitron text-xl font-black text-white">142 <span class="text-green-400 text-sm">cycles</span></div>
+        <div class="text-[10px] text-gray-500 mt-1">Remaining Useful Life</div>
+      </div>
+
+      <!-- Card: Engine B -->
+      <div class="info-card-float absolute bottom-8 right-0 bg-black/80 border border-pink-700/50 rounded-xl px-4 py-3
+                  backdrop-blur-md min-w-[140px]"
+           style="animation-delay:1s; box-shadow: 0 0 12px rgba(236,72,153,0.25)">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+          <span class="orbitron text-[10px] text-gray-400 uppercase tracking-widest">Engine B</span>
+        </div>
+        <div class="orbitron text-xl font-black text-white">38 <span class="text-yellow-400 text-sm">cycles</span></div>
+        <div class="text-[10px] text-gray-500 mt-1">Maintenance Advisory</div>
+      </div>
+
+      <!-- Card: Health Score -->
+      <div class="info-card-float absolute top-10 left-0 bg-black/80 border border-purple-600/50 rounded-xl px-4 py-3
+                  backdrop-blur-md min-w-[130px]"
+           style="animation-delay:2s">
+        <div class="orbitron text-[10px] text-gray-400 uppercase tracking-widest mb-1">Health Score</div>
+        <div class="orbitron text-2xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+          87%
+        </div>
+        <div class="w-full bg-gray-800 rounded-full h-1 mt-2">
+          <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-1 rounded-full" style="width:87%"></div>
+        </div>
+      </div>
+
+    </div>
+    <!-- end right col -->
+  </div>
+</section>
+
+<!-- ========================================================
+     FEATURES SECTION
+======================================================== -->
+<section class="py-24 border-t border-purple-900/30">
+  <div class="max-w-7xl mx-auto px-6">
+
+    <div class="text-center mb-16">
+      <p class="orbitron text-purple-500 text-xs tracking-[0.4em] uppercase mb-3">Capabilities</p>
+      <h2 class="orbitron text-4xl font-black text-white">
+        Why <span class="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BeTwin-AI?</span>
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+      <!-- Feature 1 -->
+      <div class="group p-8 bg-black border border-purple-800/30 rounded-2xl
+                  hover:border-purple-500/60 hover:shadow-xl hover:shadow-purple-900/30
+                  transition-all duration-400 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-600 to-pink-600
+                    opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div class="w-14 h-14 mb-6 bg-purple-900/30 rounded-2xl flex items-center justify-center
+                    group-hover:bg-purple-800/40 transition-colors">
+          <svg class="w-7 h-7 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+        </div>
+        <h3 class="orbitron text-white font-bold text-lg mb-3">Real-Time RUL Prediction</h3>
+        <p class="text-gray-500 leading-relaxed">
+          Feed live sensor sequences into our LSTM model and receive an accurate Remaining Useful Life
+          estimate in milliseconds — enabling just-in-time maintenance scheduling.
+        </p>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="group p-8 bg-black border border-pink-800/30 rounded-2xl
+                  hover:border-pink-500/60 hover:shadow-xl hover:shadow-pink-900/30
+                  transition-all duration-400 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-600 to-purple-600
+                    opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div class="w-14 h-14 mb-6 bg-pink-900/20 rounded-2xl flex items-center justify-center
+                    group-hover:bg-pink-800/30 transition-colors">
+          <svg class="w-7 h-7 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+        </div>
+        <h3 class="orbitron text-white font-bold text-lg mb-3">Virtual Engine Mirror</h3>
+        <p class="text-gray-500 leading-relaxed">
+          Every engine in your fleet gets its own digital twin — a virtual replica that evolves with
+          every flight cycle, capturing unique wear patterns and degradation signatures.
+        </p>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="group p-8 bg-black border border-purple-800/30 rounded-2xl
+                  hover:border-purple-500/60 hover:shadow-xl hover:shadow-purple-900/30
+                  transition-all duration-400 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-600 to-pink-600
+                    opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div class="w-14 h-14 mb-6 bg-purple-900/30 rounded-2xl flex items-center justify-center
+                    group-hover:bg-purple-800/40 transition-colors">
+          <svg class="w-7 h-7 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <h3 class="orbitron text-white font-bold text-lg mb-3">Proactive Safety Alerts</h3>
+        <p class="text-gray-500 leading-relaxed">
+          Threshold-based warnings trigger early when predicted RUL drops below critical levels,
+          giving maintenance crews maximum lead time to intervene safely.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================
+     LIVE SENSOR PREVIEW (decorative)
+======================================================== -->
+<section class="py-20 border-t border-purple-900/30">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-12">
+      <p class="orbitron text-purple-500 text-xs tracking-[0.4em] uppercase mb-2">Sensor Intelligence</p>
+      <h2 class="orbitron text-3xl font-bold text-white">
+        Multi-Sensor <span class="text-purple-400">Fusion</span>
+      </h2>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {% for item in [
+        ('T2', 'Fan Inlet Temp', '491.2', '°R', 'purple'),
+        ('P30', 'HPC Outlet Press', '556.8', 'psia', 'pink'),
+        ('Nf', 'Fan Speed', '2388', 'rpm', 'purple'),
+        ('NRf', 'Corrected Fan Spd', '8138', 'rpm', 'pink'),
+        ('T50', 'LPT Outlet Temp', '1408', '°R', 'purple'),
+        ('P2', 'Fan Inlet Press', '14.6', 'psia', 'pink'),
+        ('Nc', 'Core Speed', '9051', 'rpm', 'purple'),
+        ('Ps30', 'Static HPC Press', '48.12', 'psia', 'pink'),
+      ] %}
+      <div class="p-4 bg-black border border-{{ item[4] }}-800/30 rounded-xl
+                  hover:border-{{ item[4] }}-600/50 transition-colors group">
+        <div class="flex items-center justify-between mb-2">
+          <span class="orbitron text-{{ item[4] }}-400 text-xs font-bold">{{ item[0] }}</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+        </div>
+        <div class="orbitron text-white text-lg font-black">{{ item[2] }} <span class="text-gray-600 text-xs">{{ item[3] }}</span></div>
+        <div class="text-gray-600 text-xs mt-1">{{ item[1] }}</div>
+        <div class="w-full bg-gray-900 rounded-full h-0.5 mt-3">
+          <div class="bg-{{ item[4] }}-600 h-0.5 rounded-full transition-all group-hover:bg-{{ item[4] }}-400"
+               style="width:{{ [45,60,75,55,80,50,70,65]|random }}%"></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================
+     CTA BANNER
+======================================================== -->
+<section class="py-24 border-t border-purple-900/30 relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-r from-purple-900/15 via-black to-pink-900/10 pointer-events-none"></div>
+  <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+    <p class="orbitron text-purple-400 text-xs tracking-[0.4em] uppercase mb-4">Get Started</p>
+    <h2 class="orbitron text-5xl font-black text-white mb-6 leading-tight">
+      Your Aircraft's Health<br>
+      <span class="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+        Starts Here.
+      </span>
+    </h2>
+    <p class="text-gray-400 text-lg mb-10 max-w-2xl mx-auto">
+      Upload sensor data, launch the digital twin engine, and receive a precise RUL prediction
+      within seconds. No guesswork — only data-driven certainty.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/dashboard"
+         class="px-10 py-5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500
+                rounded-full text-white orbitron font-black tracking-widest uppercase text-sm
+                transition-all duration-300 shadow-2xl shadow-purple-900/60 hover:scale-105 hover:shadow-purple-500/40">
+        Open Dashboard &rarr;
+      </a>
+      <a href="/about"
+         class="px-10 py-5 border-2 border-purple-700/60 hover:border-purple-400 rounded-full
+                text-purple-300 hover:text-white orbitron font-bold tracking-widest uppercase text-sm
+                transition-all duration-300 hover:bg-purple-900/20">
+        Explore Technology
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ANIMATION STYLES ===== -->
+<style>
+  /* Aircraft float */
+  .aircraft-float {
+    animation: aircraftFloat 5s ease-in-out infinite;
+    filter: drop-shadow(0 0 18px rgba(168,85,247,0.5));
+  }
+  @keyframes aircraftFloat {
+    0%, 100% { transform: translateY(0px) rotate(-4deg); }
+    50%       { transform: translateY(-18px) rotate(-4deg); }
+  }
+
+  /* Radar sweep */
+  .radar-sweep {
+    background: conic-gradient(from 0deg, transparent 0deg 300deg, rgba(168,85,247,0.35) 300deg 360deg);
+    animation: radarSpin 3s linear infinite;
+    border-radius: 50%;
+  }
+  @keyframes radarSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  /* Floating info cards */
+  .info-card-float { animation: cardFloat 4s ease-in-out infinite; }
+  @keyframes cardFloat {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-8px); }
+  }
+
+  /* Exhaust line flicker */
+  .exhaust-line { animation: exhaustFlicker 1s ease-in-out infinite alternate; }
+  @keyframes exhaustFlicker {
+    0%   { opacity: 0.2; stroke-dashoffset: 0; }
+    100% { opacity: 0.7; stroke-dashoffset: -8; }
+  }
+</style>
+
+<!-- Star background script -->
+<script>
+  (function() {
+    const container = document.getElementById('stars-container');
+    if (!container) return;
+    for (let i = 0; i < 80; i++) {
+      const star = document.createElement('span');
+      const size = Math.random() * 2 + 1;
+      star.style.cssText = `
+        position:absolute;
+        width:${size}px; height:${size}px;
+        border-radius:50%;
+        background:rgba(168,85,247,${Math.random() * 0.6 + 0.1});
+        top:${Math.random() * 100}%;
+        left:${Math.random() * 100}%;
+        animation: starTwinkle ${Math.random() * 3 + 2}s ease-in-out infinite alternate;
+        animation-delay:${Math.random() * 4}s;
+      `;
+      container.appendChild(star);
+    }
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes starTwinkle {
+        0%   { opacity: 0.1; transform: scale(1); }
+        100% { opacity: 0.9; transform: scale(1.4); }
+      }
+    `;
+    document.head.appendChild(style);
+  })();
+</script>
+
+{% endblock %}

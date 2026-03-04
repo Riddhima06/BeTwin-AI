@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <title>BeTwin-AI | Dashboard</title>
-
     <style>
       body {
         margin: 0;
@@ -11,8 +10,6 @@
         background: radial-gradient(circle at top, #1b0029, #000);
         color: white;
       }
-
-      /* top navigation bar */
       .navbar {
         display: flex;
         justify-content: space-between;
@@ -20,19 +17,16 @@
         padding: 18px 40px;
         background: linear-gradient(90deg, #4b136b, #6b1fb1);
       }
-
       .navbar .logo {
         font-size: 22px;
         font-weight: 700;
       }
-
       .navbar a {
         color: white;
         text-decoration: none;
         margin-left: 25px;
         font-size: 14px;
       }
-
       .launch-btn {
         background: linear-gradient(90deg, #ff4fd8, #7b5cff);
         border: none;
@@ -42,54 +36,64 @@
         cursor: pointer;
         font-weight: 600;
       }
-
-      /* main container */
       .container {
         max-width: 900px;
         margin: 70px auto;
         text-align: center;
       }
-
       h1 {
         font-size: 40px;
         margin-bottom: 10px;
       }
-
       .subtitle {
         color: #cfcfcf;
-        margin-bottom: 35px;
+        margin-bottom: 30px;
       }
-
-      /* prediction card */
       .card {
         background: rgba(255, 255, 255, 0.04);
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 16px;
-        padding: 40px;
+        padding: 35px;
       }
-
+      .input-box {
+        margin: 15px 0 20px;
+      }
+      input {
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: none;
+        outline: none;
+        font-size: 14px;
+        width: 160px;
+      }
       .pred-box {
-        margin-top: 25px;
+        margin-top: 18px;
         font-size: 22px;
       }
-
       #rulValue {
         color: #ff6cff;
         font-weight: 700;
         font-size: 30px;
       }
-
+      #healthMsg {
+        margin-top: 12px;
+        font-size: 16px;
+      }
+      .safe {
+        color: #42ffb0;
+      }
+      .alert {
+        color: #ff7070;
+      }
       .footer {
-        margin-top: 110px;
+        margin-top: 100px;
         text-align: center;
         color: #888;
         font-size: 13px;
       }
     </style>
   </head>
-
   <body>
-    <!-- simple navbar for navigation -->
     <div class="navbar">
       <div class="logo">BeTwin-AI</div>
       <div>
@@ -100,25 +104,28 @@
       </div>
     </div>
 
-    <!-- main dashboard area -->
     <div class="container">
       <h1>Engine Health Monitor</h1>
       <div class="subtitle">
-        Launch the digital twin engine and get the Remaining Useful Life
-        prediction.
+        Select an engine and view its real Remaining Useful Life prediction.
       </div>
 
-      <!-- prediction panel -->
       <div class="card">
         <h2>Prediction Panel</h2>
-        <p>
-          Click the button to run the trained model and see the RUL estimate.
-        </p>
+
+        <!-- user chooses which real engine to inspect -->
+        <div class="input-box">
+          Engine ID :
+          <input type="number" id="engineId" placeholder="e.g. 11" />
+        </div>
 
         <div class="pred-box">
           Predicted RUL :
           <span id="rulValue">--</span>
         </div>
+
+        <!-- health message appears here -->
+        <div id="healthMsg"></div>
       </div>
     </div>
 
@@ -127,47 +134,51 @@
     </div>
 
     <script>
-      // When user clicks on "LAUNCH MONITOR"
       document
         .getElementById("launchBtn")
         .addEventListener("click", async () => {
-          // Create dummy sensor input
-          // 30 time steps × 24 features (change 24 if your model uses different count)
-          const sensorData = Array.from({ length: 30 }, () =>
-            Array(24).fill(0),
-          );
+          const engineId = document.getElementById("engineId").value.trim();
+          if (!engineId) {
+            alert("Please enter an engine ID");
+            return;
+          }
 
           document.getElementById("rulValue").innerText = "Running...";
+          const msg = document.getElementById("healthMsg");
+          msg.innerText = "";
+          msg.className = "";
 
           try {
-            // Send data to your Flask prediction API
             const response = await fetch("/predict", {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                sensor_data: sensorData,
-              }),
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ engine_id: engineId }),
             });
 
             const data = await response.json();
 
-            // If backend sends an error
-            if (data.predicted_RUL === undefined) {
-              document.getElementById("rulValue").innerText = "Error";
-              console.error(data);
+            if (!response.ok) {
+              alert(data.error || "Prediction failed");
+              document.getElementById("rulValue").innerText = "--";
               return;
             }
 
-            // Show the predicted RUL on screen
             document.getElementById("rulValue").innerText = Number(
               data.predicted_RUL,
             ).toFixed(2);
+
+            // show health status clearly for the user
+            if (data.health === "safe") {
+              msg.innerText = "✔ " + data.message;
+              msg.className = "safe";
+            } else {
+              msg.innerText = "⚠ " + data.message;
+              msg.className = "alert";
+            }
           } catch (err) {
             console.error(err);
-            document.getElementById("rulValue").innerText = "Failed";
-            alert("Prediction failed. Please check the backend server.");
+            alert("Backend server not reachable");
+            document.getElementById("rulValue").innerText = "--";
           }
         });
     </script>

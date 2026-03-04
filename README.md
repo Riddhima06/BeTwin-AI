@@ -1,7 +1,9 @@
 # BeTwin-AI
 
 BeTwin-AI is a deep learning project for predicting the Remaining Useful Life (RUL) of aircraft engines using multivariate time-series sensor data from the NASA C-MAPSS dataset.  
-The project implements an end-to-end pipeline for training an LSTM model and serving predictions through a lightweight Flask inference API, along with a web-based UI (frontend).
+The project implements an end-to-end pipeline for training an LSTM model and serving predictions through a Flask-based inference API along with a web-based user interface.
+
+---
 
 ## Project Status
 
@@ -11,7 +13,9 @@ The project implements an end-to-end pipeline for training an LSTM model and ser
 - LSTM model training
 - Model and scaler persistence
 - Inference API for real-time RUL prediction
-- Web-based UI (frontend) for interacting with the system
+- Web UI (frontend) integrated with the backend for live predictions
+
+---
 
 ## Project Structure
 
@@ -35,9 +39,13 @@ BeTwin-AI/
 ├── README.md  
 └── .gitignore
 
+---
+
 ## Dataset
 
 NASA C-MAPSS Turbofan Engine Degradation Dataset (FD001 subset).
+
+---
 
 ## Model
 
@@ -46,6 +54,8 @@ NASA C-MAPSS Turbofan Engine Degradation Dataset (FD001 subset).
 - Output: continuous RUL value
 - Loss: Mean Squared Error
 - Optimizer: Adam
+
+---
 
 ## How to Run
 
@@ -59,35 +69,37 @@ python src/train.py
 
 The trained model and scaler are saved in the `results/` directory.
 
-## Run the Inference API and UI
+---
 
-Start the application (from project root)
+## Run the Web Application and Inference API
+
+The backend API and the frontend UI are served from a single Flask application.
+
+Start the server from the project root:
 
 python src/app.py
 
-The service runs at
+The application runs at:
 
 http://127.0.0.1:5000
 
-## Web UI (Frontend)
+---
 
-The project also includes a simple frontend built using Flask templates.
+## Frontend (UI)
 
-Available pages:
+A web-based user interface has been added to the project.
+
+Pages available:
 
 - Home page
-
-http://127.0.0.1:5000/
-
 - About page
-
-http://127.0.0.1:5000/about
-
 - Dashboard page
 
-http://127.0.0.1:5000/dashboard
+The Dashboard provides a simple interface to trigger the prediction and display the Remaining Useful Life (RUL) returned by the trained model.
 
-The UI provides a basic interface for navigating the project and viewing the prediction workflow.
+When the **LAUNCH MONITOR** button is clicked on the dashboard, the frontend sends sensor data to the backend `/predict` API and displays the predicted RUL on the screen.
+
+---
 
 ## Predict RUL (API)
 
@@ -95,19 +107,10 @@ Endpoint
 
 POST /predict
 
-The API also supports GET requests using a query parameter.
-
-Expected input format
-
-A 2D array with:
-
-- 30 time steps
-- N features (must match the trained model configuration)
-
-Example request body
+Expected JSON body
 
 {
-"sensor_data": [[...], [...], ...]
+"sensor_data": [30 x N sensor matrix]
 }
 
 Example (PowerShell)
@@ -122,12 +125,17 @@ Example response
 "predicted_RUL": 1.57
 }
 
+---
+
 ## Notes
 
 - The API expects exactly 30 time steps per request.
-- The number of features must exactly match the features used during training.
-- The `results/` directory (trained model and scaler) is excluded from version control using `.gitignore`.
-- To run the API and UI on a fresh machine, the model must be generated first using `python src/train.py`.
+- The number of features must match the model training configuration.
+- The frontend dashboard internally calls the same `/predict` endpoint.
+- Generated artifacts such as trained models and scalers are excluded from version control using `.gitignore`.
+- The main application entry point is `src/app.py`. The old root-level `app.py` has been removed and all routes are merged into the single backend.
+
+---
 
 ## Authors
 

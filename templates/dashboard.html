@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>BeTwin-AI | Dashboard</title>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: radial-gradient(circle at top, #1b0029, #000);
+        color: white;
+      }
+
+      /* top navigation bar */
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 40px;
+        background: linear-gradient(90deg, #4b136b, #6b1fb1);
+      }
+
+      .navbar .logo {
+        font-size: 22px;
+        font-weight: 700;
+      }
+
+      .navbar a {
+        color: white;
+        text-decoration: none;
+        margin-left: 25px;
+        font-size: 14px;
+      }
+
+      .launch-btn {
+        background: linear-gradient(90deg, #ff4fd8, #7b5cff);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      /* main container */
+      .container {
+        max-width: 900px;
+        margin: 70px auto;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 40px;
+        margin-bottom: 10px;
+      }
+
+      .subtitle {
+        color: #cfcfcf;
+        margin-bottom: 35px;
+      }
+
+      /* prediction card */
+      .card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 40px;
+      }
+
+      .pred-box {
+        margin-top: 25px;
+        font-size: 22px;
+      }
+
+      #rulValue {
+        color: #ff6cff;
+        font-weight: 700;
+        font-size: 30px;
+      }
+
+      .footer {
+        margin-top: 110px;
+        text-align: center;
+        color: #888;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- simple navbar for navigation -->
+    <div class="navbar">
+      <div class="logo">BeTwin-AI</div>
+      <div>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/dashboard">Dashboard</a>
+        <button class="launch-btn" id="launchBtn">LAUNCH MONITOR</button>
+      </div>
+    </div>
+
+    <!-- main dashboard area -->
+    <div class="container">
+      <h1>Engine Health Monitor</h1>
+      <div class="subtitle">
+        Launch the digital twin engine and get the Remaining Useful Life
+        prediction.
+      </div>
+
+      <!-- prediction panel -->
+      <div class="card">
+        <h2>Prediction Panel</h2>
+        <p>
+          Click the button to run the trained model and see the RUL estimate.
+        </p>
+
+        <div class="pred-box">
+          Predicted RUL :
+          <span id="rulValue">--</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      © 2026 BeTwin-AI – Aircraft Digital Twin Health Monitor
+    </div>
+
+    <script>
+      // When user clicks on "LAUNCH MONITOR"
+      document
+        .getElementById("launchBtn")
+        .addEventListener("click", async () => {
+          // Create dummy sensor input
+          // 30 time steps × 24 features (change 24 if your model uses different count)
+          const sensorData = Array.from({ length: 30 }, () =>
+            Array(24).fill(0),
+          );
+
+          document.getElementById("rulValue").innerText = "Running...";
+
+          try {
+            // Send data to your Flask prediction API
+            const response = await fetch("/predict", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                sensor_data: sensorData,
+              }),
+            });
+
+            const data = await response.json();
+
+            // If backend sends an error
+            if (data.predicted_RUL === undefined) {
+              document.getElementById("rulValue").innerText = "Error";
+              console.error(data);
+              return;
+            }
+
+            // Show the predicted RUL on screen
+            document.getElementById("rulValue").innerText = Number(
+              data.predicted_RUL,
+            ).toFixed(2);
+          } catch (err) {
+            console.error(err);
+            document.getElementById("rulValue").innerText = "Failed";
+            alert("Prediction failed. Please check the backend server.");
+          }
+        });
+    </script>
+  </body>
+</html>

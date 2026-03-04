@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-
 def load_data(path):
     df = pd.read_csv(path, sep=" ", header=None)
     df = df.dropna(axis=1)

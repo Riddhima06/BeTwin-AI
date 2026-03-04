@@ -101,6 +101,6 @@ Response
 
 ## Authors
 
-Riddhima Rajput
-Diksha Sharma
-Charvi Mittal
+- Riddhima Rajput
+- Diksha Sharma
+- Charvi Mittal

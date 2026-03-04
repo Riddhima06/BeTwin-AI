@@ -1,15 +1,32 @@
-from flask import Flask,request,jsonify
+import os
+from flask import Flask,request,jsonify,render_template
 import numpy as np
 import joblib
 from tensorflow.keras.models import load_model
 import json
-app=Flask(__name__)
-model=load_model("../results/model.h5",compile=False)
-scaler=joblib.load("../results/scaler.pkl")
+
+BASE_DIR=os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH=os.path.join(BASE_DIR,"..","results","model.h5")
+SCALER_PATH=os.path.join(BASE_DIR,"..","results","scaler.pkl")
+app=Flask(__name__,template_folder="../templates")
+model=load_model(MODEL_PATH,compile=False)
+scaler=joblib.load(SCALER_PATH)
+
+# model=load_model("../results/model.h5",compile=False)
+#scaler=joblib.load("../results/scaler.pkl")
 SEQ_LENGTH=30
 @app.route("/")
 def home():
-  return "RUL Prediction API is running"
+  return render_template("home.html")
+
+@app.route("/about")
+def about():
+  return render_template("about.html")
+
+@app.route("/dashboard")
+def dashboard():
+  return render_template("dashboard.html")
+
 @app.route("/predict",methods=["GET","POST"])
 def predict():
   if request.method=="POST":
@@ -36,5 +53,6 @@ def predict():
   output=model.predict(model_input,verbose=0)
   predicted_rul=float(output[0][0])
   return jsonify({"predicted_RUL":round(predicted_rul,2)})
+
 if __name__=="__main__":
   app.run(debug=True)

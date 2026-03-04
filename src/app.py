@@ -2,7 +2,7 @@ import os
 import json
 import numpy as np
 import pandas as pd
-from flask import Flask,request,jsonify,render_template
+from flask import Flask,request,jsonify,render_template,redirect
 import joblib
 from tensorflow.keras.models import load_model
 
@@ -35,7 +35,6 @@ def home():
 @app.route("/about")
 def about():
   return render_template("about.html")
-
 
 @app.route("/dashboard")
 def dashboard():

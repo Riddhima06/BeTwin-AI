@@ -1,186 +1,220 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>BeTwin-AI | Dashboard</title>
-    <style>
-      body {
-        margin: 0;
-        font-family: Arial, Helvetica, sans-serif;
-        background: radial-gradient(circle at top, #1b0029, #000);
-        color: white;
-      }
-      .navbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 18px 40px;
-        background: linear-gradient(90deg, #4b136b, #6b1fb1);
-      }
-      .navbar .logo {
-        font-size: 22px;
-        font-weight: 700;
-      }
-      .navbar a {
-        color: white;
-        text-decoration: none;
-        margin-left: 25px;
-        font-size: 14px;
-      }
-      .launch-btn {
-        background: linear-gradient(90deg, #ff4fd8, #7b5cff);
-        border: none;
-        padding: 10px 20px;
-        border-radius: 20px;
-        color: white;
-        cursor: pointer;
-        font-weight: 600;
-      }
-      .container {
-        max-width: 900px;
-        margin: 70px auto;
-        text-align: center;
-      }
-      h1 {
-        font-size: 40px;
-        margin-bottom: 10px;
-      }
-      .subtitle {
-        color: #cfcfcf;
-        margin-bottom: 30px;
-      }
-      .card {
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 35px;
-      }
-      .input-box {
-        margin: 15px 0 20px;
-      }
-      input {
-        padding: 10px 14px;
-        border-radius: 10px;
-        border: none;
-        outline: none;
-        font-size: 14px;
-        width: 160px;
-      }
-      .pred-box {
-        margin-top: 18px;
-        font-size: 22px;
-      }
-      #rulValue {
-        color: #ff6cff;
-        font-weight: 700;
-        font-size: 30px;
-      }
-      #healthMsg {
-        margin-top: 12px;
-        font-size: 16px;
-      }
-      .safe {
-        color: #42ffb0;
-      }
-      .alert {
-        color: #ff7070;
-      }
-      .footer {
-        margin-top: 100px;
-        text-align: center;
-        color: #888;
-        font-size: 13px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="navbar">
-      <div class="logo">BeTwin-AI</div>
-      <div>
-        <a href="/">Home</a>
-        <a href="/about">About</a>
-        <a href="/dashboard">Dashboard</a>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>BeTwin-AI | Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: radial-gradient(circle at top, #1b0029, #000);
+      color: white;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 40px;
+      background: linear-gradient(90deg, #4b136b, #6b1fb1);
+    }
+
+    .navbar .logo {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+      font-size: 14px;
+    }
+
+    .launch-btn {
+      background: linear-gradient(90deg, #ff4fd8, #7b5cff);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 70px auto;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #cfcfcf;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 35px;
+    }
+
+    .input-box {
+      margin: 15px 0 20px;
+    }
+
+    input {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      width: 160px;
+    }
+
+    .pred-box {
+      margin-top: 18px;
+      font-size: 22px;
+    }
+
+    #rulValue {
+      color: #ff6cff;
+      font-weight: 700;
+      font-size: 30px;
+    }
+
+    #healthMsg {
+      margin-top: 12px;
+      font-size: 16px;
+    }
+
+    .safe {
+      color: #42ffb0;
+    }
+
+    .alert {
+      color: #ff7070;
+    }
+
+    .footer {
+      margin-top: 100px;
+      text-align: center;
+      color: #888;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="navbar">
+    <div class="logo">BeTwin-AI</div>
+    <div>
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+      <a href="/dashboard">Dashboard</a>
+
+      <a href="http://localhost:8501" target="_blank">
         <button class="launch-btn" id="launchBtn">LAUNCH MONITOR</button>
-      </div>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Engine Health Monitor</h1>
+    <div class="subtitle">
+      Select an engine and view its real Remaining Useful Life prediction.
     </div>
 
-    <div class="container">
-      <h1>Engine Health Monitor</h1>
-      <div class="subtitle">
-        Select an engine and view its real Remaining Useful Life prediction.
+    <div class="card">
+      <h2>Prediction Panel</h2>
+
+      <!-- user chooses which real engine to inspect -->
+      <div class="input-box">
+        Engine ID :
+        <input type="number" id="engineId" placeholder="e.g. 11" />
       </div>
 
-      <div class="card">
-        <h2>Prediction Panel</h2>
-
-        <!-- user chooses which real engine to inspect -->
-        <div class="input-box">
-          Engine ID :
-          <input type="number" id="engineId" placeholder="e.g. 11" />
-        </div>
-
-        <div class="pred-box">
-          Predicted RUL :
-          <span id="rulValue">--</span>
-        </div>
-
-        <!-- health message appears here -->
-        <div id="healthMsg"></div>
+      <div class="pred-box">
+        Predicted RUL :
+        <span id="rulValue">--</span>
       </div>
-    </div>
 
-    <div class="footer">
-      © 2026 BeTwin-AI – Aircraft Digital Twin Health Monitor
+      <!-- health message appears here -->
+      <div id="healthMsg"></div>
     </div>
+  </div>
 
-    <script>
-      document
-        .getElementById("launchBtn")
-        .addEventListener("click", async () => {
-          const engineId = document.getElementById("engineId").value.trim();
-          if (!engineId) {
-            alert("Please enter an engine ID");
-            return;
+  <div class="footer">
+    © 2026 BeTwin-AI – Aircraft Digital Twin Health Monitor
+  </div>
+
+  <script>
+
+    document.getElementById("launchBtn")
+      .addEventListener("click", async () => {
+
+        const engineId = document.getElementById("engineId").value.trim()
+
+        if (!engineId) {
+          alert("Please enter an engine ID")
+          return
+        }
+
+        document.getElementById("rulValue").innerText = "Running..."
+
+        const msg = document.getElementById("healthMsg")
+        msg.innerText = ""
+        msg.className = ""
+
+        try {
+
+          const response = await fetch("/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ engine_id: engineId })
+          })
+
+          const data = await response.json()
+
+          if (!response.ok) {
+            alert(data.error || "Prediction failed")
+            document.getElementById("rulValue").innerText = "--"
+            return
           }
 
-          document.getElementById("rulValue").innerText = "Running...";
-          const msg = document.getElementById("healthMsg");
-          msg.innerText = "";
-          msg.className = "";
+          document.getElementById("rulValue").innerText =
+            Number(data.predicted_RUL).toFixed(2)
 
-          try {
-            const response = await fetch("/predict", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ engine_id: engineId }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-              alert(data.error || "Prediction failed");
-              document.getElementById("rulValue").innerText = "--";
-              return;
-            }
-
-            document.getElementById("rulValue").innerText = Number(
-              data.predicted_RUL,
-            ).toFixed(2);
-
-            // show health status clearly for the user
-            if (data.health === "safe") {
-              msg.innerText = "✔ " + data.message;
-              msg.className = "safe";
-            } else {
-              msg.innerText = "⚠ " + data.message;
-              msg.className = "alert";
-            }
-          } catch (err) {
-            console.error(err);
-            alert("Backend server not reachable");
-            document.getElementById("rulValue").innerText = "--";
+          if (data.health === "safe") {
+            msg.innerText = "✔ " + data.message
+            msg.className = "safe"
           }
-        });
-    </script>
-  </body>
+          else {
+            msg.innerText = "⚠ " + data.message
+            msg.className = "alert"
+          }
+
+          window.open("http://localhost:8501", "_blank")
+
+        } catch (err) {
+
+          console.error(err)
+          alert("Backend server not reachable")
+          document.getElementById("rulValue").innerText = "--"
+
+        }
+
+      })
+
+  </script>
+
+</body>
+
 </html>

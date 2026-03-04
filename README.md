@@ -1,7 +1,7 @@
 # BeTwin-AI
 
-BeTwin-AI is a deep learning project for predicting the Remaining Useful Life (RUL) of aircraft engines using multivariate time-series sensor data from the NASA C-MAPSS dataset.
-The project implements an end-to-end pipeline for training an LSTM model and serving predictions through a lightweight Flask inference API.
+BeTwin-AI is a deep learning project for predicting the Remaining Useful Life (RUL) of aircraft engines using multivariate time-series sensor data from the NASA C-MAPSS dataset.  
+The project implements an end-to-end pipeline for training an LSTM model and serving predictions through a lightweight Flask inference API, along with a web-based UI (frontend).
 
 ## Project Status
 
@@ -11,23 +11,28 @@ The project implements an end-to-end pipeline for training an LSTM model and ser
 - LSTM model training
 - Model and scaler persistence
 - Inference API for real-time RUL prediction
+- Web-based UI (frontend) for interacting with the system
 
 ## Project Structure
 
-BeTwin-AI/
-├── data/
-│ ├── train_FD001.txt
-│ ├── test_FD001.txt
-│ └── RUL_FD001.txt
-├── results/
-├── src/
-│ ├── config.py
-│ ├── preprocessing.py
-│ ├── model.py
-│ ├── train.py
-│ └── app.py
-├── requirements.txt
-├── README.md
+BeTwin-AI/  
+├── data/  
+│ ├── train_FD001.txt  
+│ ├── test_FD001.txt  
+│ └── RUL_FD001.txt  
+├── results/  
+├── src/  
+│ ├── config.py  
+│ ├── preprocessing.py  
+│ ├── model.py  
+│ ├── train.py  
+│ └── app.py  
+├── templates/  
+│ ├── home.html  
+│ ├── about.html  
+│ └── dashboard.html  
+├── requirements.txt  
+├── README.md  
 └── .gitignore
 
 ## Dataset
@@ -52,11 +57,11 @@ Train the model (from project root)
 
 python src/train.py
 
-The trained model and scaler are saved in the results/ directory.
+The trained model and scaler are saved in the `results/` directory.
 
-## Run the Inference API
+## Run the Inference API and UI
 
-Start the API server
+Start the application (from project root)
 
 python src/app.py
 
@@ -64,30 +69,54 @@ The service runs at
 
 http://127.0.0.1:5000
 
-Health check
+## Web UI (Frontend)
 
-Open in browser
+The project also includes a simple frontend built using Flask templates.
+
+Available pages:
+
+- Home page
 
 http://127.0.0.1:5000/
 
-## Predict RUL
+- About page
+
+http://127.0.0.1:5000/about
+
+- Dashboard page
+
+http://127.0.0.1:5000/dashboard
+
+The UI provides a basic interface for navigating the project and viewing the prediction workflow.
+
+## Predict RUL (API)
 
 Endpoint
 
 POST /predict
 
-Expected JSON body
+The API also supports GET requests using a query parameter.
+
+Expected input format
+
+A 2D array with:
+
+- 30 time steps
+- N features (must match the trained model configuration)
+
+Example request body
 
 {
-"sensor_data": [30 x N sensor matrix]
+"sensor_data": [[...], [...], ...]
 }
 
 Example (PowerShell)
 
 $body=@{sensor_data=(1..30|%{,@(0..23|%{0})})}|ConvertTo-Json -Compress
-Invoke-RestMethod http://127.0.0.1:5000/predict -Method POST -ContentType application/json -Body $body
+Invoke-RestMethod http://127.0.0.1:5000/predict
+-Method POST -ContentType application/json -Body $body
 
-Response
+Example response
 
 {
 "predicted_RUL": 1.57
@@ -96,8 +125,9 @@ Response
 ## Notes
 
 - The API expects exactly 30 time steps per request.
-- The number of features must match the training configuration.
-- Generated artifacts such as trained models and scalers are excluded from version control using .gitignore.
+- The number of features must exactly match the features used during training.
+- The `results/` directory (trained model and scaler) is excluded from version control using `.gitignore`.
+- To run the API and UI on a fresh machine, the model must be generated first using `python src/train.py`.
 
 ## Authors
 

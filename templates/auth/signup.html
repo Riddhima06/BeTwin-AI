@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block title %}Sign Up | BeTwin-AI{% endblock %}
+
+{% block content %}
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
+  
+  <!-- Background ambient glows -->
+  <div class="absolute -top-40 -left-40 w-[600px] h-[600px] bg-purple-900/20 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-pink-900/15 rounded-full blur-3xl pointer-events-none"></div>
+  
+  <!-- Animated grid background -->
+  <div class="absolute inset-0 grid-bg opacity-30 pointer-events-none"></div>
+
+  <div class="relative z-10 w-full px-6 py-12">
+    <div class="max-w-md mx-auto">
+      
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-purple-900/30 border border-purple-700/40 rounded-full mb-6">
+          <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+          <span class="orbitron text-purple-300 text-xs tracking-widest uppercase">Create New Account</span>
+        </div>
+        
+        <h1 class="orbitron font-black text-4xl mb-3">
+          <span class="block text-white">Join BeTwin-AI</span>
+          <span class="block bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            Today
+          </span>
+        </h1>
+        
+        <p class="text-gray-400 text-sm">Start monitoring your aircraft's digital twin</p>
+      </div>
+
+      <!-- Signup Form Card -->
+      <div class="relative bg-gradient-to-br from-purple-950/40 to-slate-950/40 border border-purple-700/30 rounded-2xl p-8 backdrop-blur-xl glow-border">
+        
+        <!-- Decorative gradient line -->
+        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
+
+        <form method="POST" action="/signup" class="space-y-5">
+          
+          <!-- Full Name Field -->
+          <div>
+            <label for="fullname" class="block orbitron text-purple-300 text-xs font-bold mb-2 tracking-widest uppercase">
+              Full Name
+            </label>
+            <input
+              type="text"
+              id="fullname"
+              name="fullname"
+              required
+              placeholder="Captain John Smith"
+              class="w-full px-4 py-2.5 bg-slate-900/50 border border-purple-700/40 hover:border-purple-600/60 
+                     focus:border-purple-500 focus:outline-none rounded-lg text-white placeholder-gray-600
+                     transition-all duration-300 focus:bg-slate-900/80 focus:shadow-lg focus:shadow-purple-500/20 text-sm">
+          </div>
+
+          <!-- Email Field -->
+          <div>
+            <label for="email" class="block orbitron text-purple-300 text-xs font-bold mb-2 tracking-widest uppercase">
+              Email Address
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              placeholder="your.email@aviation.com"
+              class="w-full px-4 py-2.5 bg-slate-900/50 border border-purple-700/40 hover:border-purple-600/60 
+                     focus:border-purple-500 focus:outline-none rounded-lg text-white placeholder-gray-600
+                     transition-all duration-300 focus:bg-slate-900/80 focus:shadow-lg focus:shadow-purple-500/20 text-sm">
+          </div>
+
+          <!-- Company Field -->
+          <div>
+            <label for="company" class="block orbitron text-purple-300 text-xs font-bold mb-2 tracking-widest uppercase">
+              Company / Organization
+            </label>
+            <input
+              type="text"
+              id="company"
+              name="company"
+              placeholder="Your Aviation Company"
+              class="w-full px-4 py-2.5 bg-slate-900/50 border border-purple-700/40 hover:border-purple-600/60
+                     focus:border-purple-500 focus:outline-none rounded-lg text-white placeholder-gray-600
+                     transition-all duration-300 focus:bg-slate-900/80 focus:shadow-lg focus:shadow-purple-500/20 text-sm">
+          </div>
+
+          <!-- Password Field -->
+          <div>
+            <label for="password" class="block orbitron text-purple-300 text-xs font-bold mb-2 tracking-widest uppercase">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              placeholder="••••••••••"
+              class="w-full px-4 py-2.5 bg-slate-900/50 border border-purple-700/40 hover:border-purple-600/60
+                     focus:border-purple-500 focus:outline-none rounded-lg text-white placeholder-gray-600
+                     transition-all duration-300 focus:bg-slate-900/80 focus:shadow-lg focus:shadow-purple-500/20 text-sm">
+            <p class="text-xs text-gray-500 mt-2">Minimum 8 characters, mix of letters and numbers</p>
+          </div>
+
+          <!-- Confirm Password Field -->
+          <div>
+            <label for="confirm_password" class="block orbitron text-purple-300 text-xs font-bold mb-2 tracking-widest uppercase">
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              id="confirm_password"
+              name="confirm_password"
+              required
+              placeholder="••••••••••"
+              class="w-full px-4 py-2.5 bg-slate-900/50 border border-purple-700/40 hover:border-purple-600/60
+                     focus:border-purple-500 focus:outline-none rounded-lg text-white placeholder-gray-600
+                     transition-all duration-300 focus:bg-slate-900/80 focus:shadow-lg focus:shadow-purple-500/20 text-sm">
+          </div>
+
+          <!-- Terms Checkbox -->
+          <label class="flex items-start gap-3 cursor-pointer pt-2">
+            <input type="checkbox" name="terms" required class="w-4 h-4 mt-1 rounded border-purple-700/40 bg-slate-900/50 accent-purple-600 flex-shrink-0">
+            <span class="text-gray-400 text-xs">
+              I agree to the <a href="#" class="text-purple-400 hover:text-purple-300">Terms of Service</a> 
+              and <a href="#" class="text-purple-400 hover:text-purple-300">Privacy Policy</a>
+            </span>
+          </label>
+
+          <!-- Signup Button -->
+          <button
+            type="submit"
+            class="w-full mt-8 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500
+                   rounded-lg text-white orbitron font-bold tracking-widest uppercase text-sm
+                   transition-all duration-300 shadow-xl shadow-purple-900/60 hover:shadow-purple-500/50
+                   hover:scale-105 active:scale-95">
+            Create Account
+          </button>
+
+        </form>
+
+        <!-- Divider -->
+        <div class="relative my-8">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-purple-700/20"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-gradient-to-br from-purple-950/40 to-slate-950/40 text-gray-500">OR</span>
+          </div>
+        </div>
+
+        <!-- Login Link -->
+        <div class="text-center">
+          <p class="text-gray-400 text-sm">
+            Already have an account?
+            <a href="/login" class="text-purple-400 font-bold hover:text-pink-400 transition-colors">
+              Sign in here
+            </a>
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Bottom Info -->
+      <div class="mt-12 text-center text-xs text-gray-600">
+        <p>🔐 Your data is encrypted and secured by enterprise-grade protocols</p>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<script>
+  // Password validation feedback
+  const password = document.getElementById('password');
+  const confirmPassword = document.getElementById('confirm_password');
+  
+  confirmPassword.addEventListener('input', function() {
+    if (password.value !== confirmPassword.value) {
+      confirmPassword.style.borderColor = 'rgb(220, 38, 38)';
+    } else {
+      confirmPassword.style.borderColor = '';
+    }
+  });
+</script>
+{% endblock %}

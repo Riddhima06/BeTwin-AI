@@ -1,48 +1,18 @@
-import os
-import json
+from flask import Flask,request,jsonify
 import numpy as np
 import pandas as pd
 from flask import Flask,request,jsonify,render_template
 import joblib
 from tensorflow.keras.models import load_model
-
-BASE_DIR=os.path.dirname(os.path.abspath(__file__))
-
-MODEL_PATH=os.path.join(BASE_DIR,"..","results","model.h5")
-SCALER_PATH=os.path.join(BASE_DIR,"..","results","scaler.pkl")
-DATA_PATH=os.path.join(BASE_DIR,"..","data","train_FD001.txt")
-
-app=Flask(__name__,template_folder="../templates")
-
-model=load_model(MODEL_PATH,compile=False)
-scaler=joblib.load(SCALER_PATH)
-
-# load dataset once (real engine data)
-raw_df=pd.read_csv(DATA_PATH,sep=" ",header=None)
-raw_df=raw_df.dropna(axis=1)
-
+import json
+app=Flask(__name__)
+model=load_model("../results/model.h5",compile=False)
+scaler=joblib.load("../results/scaler.pkl")
 SEQ_LENGTH=30
-
-# you can tune this later
-SAFE_RUL_THRESHOLD=90
-
-
 @app.route("/")
 def home():
-  return render_template("home.html")
-
-
-@app.route("/about")
-def about():
-  return render_template("about.html")
-
-
-@app.route("/dashboard")
-def dashboard():
-  return render_template("dashboard.html")
-
-
-@app.route("/predict",methods=["POST"])
+  return "RUL Prediction API is running"
+@app.route("/predict",methods=["GET","POST"])
 def predict():
 
   body=request.get_json()

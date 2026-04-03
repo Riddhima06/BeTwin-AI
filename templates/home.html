@@ -329,26 +329,26 @@
     </div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       {% for item in [
-        ('T2', 'Fan Inlet Temp', '491.2', '°R', 'purple'),
-        ('P30', 'HPC Outlet Press', '556.8', 'psia', 'pink'),
-        ('Nf', 'Fan Speed', '2388', 'rpm', 'purple'),
-        ('NRf', 'Corrected Fan Spd', '8138', 'rpm', 'pink'),
-        ('T50', 'LPT Outlet Temp', '1408', '°R', 'purple'),
-        ('P2', 'Fan Inlet Press', '14.6', 'psia', 'pink'),
-        ('Nc', 'Core Speed', '9051', 'rpm', 'purple'),
-        ('Ps30', 'Static HPC Press', '48.12', 'psia', 'pink'),
+        ('T2', 'Fan Inlet Temp', '491.2', '°R', 'purple', 'rgb(168, 85, 247)', 'rgb(147, 51, 234)', 'rgb(192, 132, 252)'),
+        ('P30', 'HPC Outlet Press', '556.8', 'psia', 'pink', 'rgb(236, 72, 153)', 'rgb(219, 39, 119)', 'rgb(244, 114, 182)'),
+        ('Nf', 'Fan Speed', '2388', 'rpm', 'purple', 'rgb(168, 85, 247)', 'rgb(147, 51, 234)', 'rgb(192, 132, 252)'),
+        ('NRf', 'Corrected Fan Spd', '8138', 'rpm', 'pink', 'rgb(236, 72, 153)', 'rgb(219, 39, 119)', 'rgb(244, 114, 182)'),
+        ('T50', 'LPT Outlet Temp', '1408', '°R', 'purple', 'rgb(168, 85, 247)', 'rgb(147, 51, 234)', 'rgb(192, 132, 252)'),
+        ('P2', 'Fan Inlet Press', '14.6', 'psia', 'pink', 'rgb(236, 72, 153)', 'rgb(219, 39, 119)', 'rgb(244, 114, 182)'),
+        ('Nc', 'Core Speed', '9051', 'rpm', 'purple', 'rgb(168, 85, 247)', 'rgb(147, 51, 234)', 'rgb(192, 132, 252)'),
+        ('Ps30', 'Static HPC Press', '48.12', 'psia', 'pink', 'rgb(236, 72, 153)', 'rgb(219, 39, 119)', 'rgb(244, 114, 182)'),
       ] %}
-      <div class="p-4 bg-black border border-{{ item[4] }}-800/30 rounded-xl
-                  hover:border-{{ item[4] }}-600/50 transition-colors group">
+      <div class="p-4 bg-black border rounded-xl transition-colors group"
+           style="border-color: {{ item[5] }}20; --hover-color: {{ item[6] }}80">
         <div class="flex items-center justify-between mb-2">
-          <span class="orbitron text-{{ item[4] }}-400 text-xs font-bold">{{ item[0] }}</span>
+          <span class="orbitron text-xs font-bold" style="color: {{ item[5] }}">{{ item[0] }}</span>
           <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
         </div>
         <div class="orbitron text-white text-lg font-black">{{ item[2] }} <span class="text-gray-600 text-xs">{{ item[3] }}</span></div>
         <div class="text-gray-600 text-xs mt-1">{{ item[1] }}</div>
         <div class="w-full bg-gray-900 rounded-full h-0.5 mt-3">
-          <div class="bg-{{ item[4] }}-600 h-0.5 rounded-full transition-all group-hover:bg-{{ item[4] }}-400"
-               style="width:{{ [45,60,75,55,80,50,70,65]|random }}%"></div>
+          <div class="h-0.5 rounded-full transition-all"
+               style="background-color: {{ item[6] }}; width:{{ [45,60,75,55,80,50,70,65]|random }}%"></div>
         </div>
       </div>
       {% endfor %}

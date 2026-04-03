@@ -7,133 +7,217 @@ The project implements an end-to-end pipeline for training an LSTM model and ser
 
 ## Project Status
 
-- Data loading and preprocessing
-- RUL label generation
-- Feature scaling and sequence creation
-- LSTM model training
-- Model and scaler persistence
-- Inference API for real-time RUL prediction
-- Web UI (frontend) integrated with the backend for live predictions
+- ✅ Data loading and preprocessing
+- ✅ RUL label generation
+- ✅ Feature scaling and sequence creation
+- ✅ LSTM model training
+- ✅ Model and scaler persistence
+- ✅ Inference API for real-time RUL prediction
+- ✅ Web UI (frontend) integrated with backend
+- ✅ User Authentication System (Sign Up, Login, Logout)
+- ✅ SQLite Database for User Management
+- ✅ Flask Web Application with UI
+- ✅ Password Hashing and Security
 
 ---
 
 ## Project Structure
 
-BeTwin-AI/  
-├── data/  
-│ ├── train_FD001.txt  
-│ ├── test_FD001.txt  
-│ └── RUL_FD001.txt  
-├── results/  
-├── src/  
-│ ├── config.py  
-│ ├── preprocessing.py  
-│ ├── model.py  
-│ ├── train.py  
-│ └── app.py  
-├── templates/  
-│ ├── home.html  
-│ ├── about.html  
-│ └── dashboard.html  
-├── requirements.txt  
-├── README.md  
+```
+
+BeTwin-AI/
+├── data/
+│   ├── train_FD001.txt
+│   ├── test_FD001.txt
+│   └── RUL_FD001.txt
+├── results/
+│   ├── model.h5
+│   └── scaler.pkl
+├── src/
+│   ├── app.py
+│   ├── config.py
+│   ├── preprocessing.py
+│   ├── model.py
+│   ├── train.py
+│   └── main.py
+├── templates/
+│   ├── base.html
+│   ├── home.html
+│   ├── about.html
+│   ├── dashboard.html
+│   └── auth/
+│       ├── login.html
+│       └── signup.html
+├── requirements.txt
+├── README.md
 └── .gitignore
+
+```
 
 ---
 
 ## Dataset
 
-NASA C-MAPSS Turbofan Engine Degradation Dataset (FD001 subset).
+- NASA C-MAPSS turbofan engine dataset
+- Includes:
+  - Training data
+  - Test data
+  - True RUL values
 
 ---
 
-## Model
+## LSTM Model
 
-- LSTM-based regression model
-- Input: fixed-length multivariate sensor sequences
-- Output: continuous RUL value
-- Loss: Mean Squared Error
-- Optimizer: Adam
+- **Architecture**: LSTM-based regression model
+- **Input**: Fixed-length multivariate sensor sequences (30 timesteps × 21 sensors)
+- **Output**: Continuous RUL value (Remaining Useful Life in cycles)
+- **Loss Function**: Mean Squared Error (MSE)
+- **Optimizer**: Adam
+
+---
+
+## Technology Stack
+
+### Backend
+
+- Python 3.13
+- Flask (Web framework)
+- TensorFlow / Keras (Deep learning)
+- SQLite (Database)
+- Werkzeug (Authentication security)
+
+### Frontend
+
+- HTML5 / Jinja2
+- Tailwind CSS
+- JavaScript
+
+### Data Processing
+
+- NumPy
+- Pandas
+- Scikit-learn
+- Joblib
 
 ---
 
 ## How to Run
 
-Install dependencies
+### 1. Install Dependencies
 
+```bash
 pip install -r requirements.txt
+```
 
-Train the model (from project root)
+### 2. Train the Model (Optional)
 
+```bash
 python src/train.py
+```
 
-The trained model and scaler are saved in the `results/` directory.
+Trained model and scaler will be saved in `results/`.
 
----
+### 3. Run the Flask Application
 
-## Run the Web Application and Inference API
-
-The backend API and the frontend UI are served from a single Flask application.
-
-Start the server from the project root:
-
+```bash
 python src/app.py
+```
 
-The application runs at:
+App will run at:
 
+```
 http://127.0.0.1:5000
+```
 
 ---
 
-## Frontend (UI)
+## Features
 
-A web-based user interface has been added to the project.
+### Web Application
 
-Pages available:
+- 🏠 Home Page
+- 👤 User Authentication (Signup/Login)
+- 🔐 Password Hashing & Security
+- 📊 Dashboard (Login required)
+- ℹ️ About Page
 
-- Home page
-- About page
-- Dashboard page
+### Authentication API
 
-The Dashboard provides a simple interface to trigger the prediction and display the Remaining Useful Life (RUL) returned by the trained model.
+- **POST /signup**
+  - Fields: `fullname`, `email`, `company`, `password`, `confirm_password`
 
-When the **LAUNCH MONITOR** button is clicked on the dashboard, the frontend sends sensor data to the backend `/predict` API and displays the predicted RUL on the screen.
+- **POST /login**
+  - Fields: `email`, `password`
+
+- **GET /logout**
 
 ---
 
-## Predict RUL (API)
+## RUL Prediction API
 
-Endpoint
+### POST /predict
 
-POST /predict
+#### Request Body
 
-Expected JSON body
-
+```json
 {
-"sensor_data": [30 x N sensor matrix]
+  "sensor_data": [[...30 values...], [...30 values...]]
 }
+```
 
-Example (PowerShell)
+#### Response
 
-$body=@{sensor_data=(1..30|%{,@(0..23|%{0})})}|ConvertTo-Json -Compress
-Invoke-RestMethod http://127.0.0.1:5000/predict
--Method POST -ContentType application/json -Body $body
-
-Example response
-
+```json
 {
-"predicted_RUL": 1.57
+  "predicted_RUL": 1.57
 }
+```
+
+#### Example (PowerShell)
+
+```powershell
+$body = @{sensor_data=(1..30|%{,@(0..23|%{0})})} | ConvertTo-Json -Compress
+Invoke-RestMethod http://127.0.0.1:5000/predict -Method POST -ContentType application/json -Body $body
+```
+
+---
+
+## Database
+
+- SQLite Database: `betwin_ai.db`
+- Auto-created on first run
+
+### Users Table
+
+- id (Primary Key)
+- fullname
+- email (Unique)
+- company
+- password (hashed)
+- created_at
 
 ---
 
 ## Notes
 
-- The API expects exactly 30 time steps per request.
-- The number of features must match the model training configuration.
-- The frontend dashboard internally calls the same `/predict` endpoint.
-- Generated artifacts such as trained models and scalers are excluded from version control using `.gitignore`.
-- The main application entry point is `src/app.py`. The old root-level `app.py` has been removed and all routes are merged into the single backend.
+- API expects exactly 30 timesteps
+- Feature count must match training config (21 sensors)
+- Models, scalers, and DB are excluded via `.gitignore`
+- Passwords are securely hashed
+- Uses Flask sessions for authentication
+- Database auto-initialized via `init_db()`
+- Frontend uses Tailwind CSS with Jinja2 templates
+
+---
+
+## Recent Updates
+
+- Fixed HTML template issues
+- Added full authentication system
+- Integrated frontend with backend
+- Implemented SQLite DB
+- Improved project structure
+- Application fully functional
 
 ---
 
@@ -142,3 +226,17 @@ Example response
 - Riddhima Rajput
 - Diksha Sharma
 - Charvi Mittal
+
+````
+
+---
+
+## ✅ What you should do now
+
+1. Replace your README with this
+2. Then run:
+```bash
+git add README.md
+git commit -m "Resolved merge conflict and updated README"
+git push
+````

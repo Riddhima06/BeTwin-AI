@@ -1,93 +1,146 @@
 # 🚀 BeTwin-AI — Predictive Aircraft Engine Health System
 
-BeTwin-AI is a **full-stack AI-powered predictive maintenance system** that estimates the **Remaining Useful Life (RUL)** of aircraft engines using the **NASA C-MAPSS dataset**.
+BeTwin-AI is a **production-grade, full-stack AI system** designed for **predictive maintenance of aircraft engines** using the NASA C-MAPSS dataset.
 
 It combines:
 
-- 🧠 Deep Learning (LSTM time-series forecasting)
-- ⚙️ End-to-end ML pipeline (preprocessing → training → inference)
-- 🌐 Flask web application
-- 🔐 Secure authentication system
-- 📊 Real-time engine health dashboard
+- 🧠 Deep Learning (LSTM-based time-series forecasting)
+- ⚙️ End-to-end ML pipeline (training → validation → inference)
+- 🌐 Flask full-stack web application
+- 🔐 Enterprise-grade authentication system (Session + JWT)
+- 📊 Real-time predictive dashboard
+- 🛡️ Secure, deployment-ready architecture
 
 ---
 
 # 🎯 Problem Statement
 
-Aircraft engines degrade over time due to complex operating conditions.
+Aircraft engines degrade gradually due to complex operational conditions.
 
-👉 The goal of BeTwin-AI is to:
+Unexpected failures can cause:
 
-- Predict engine failure BEFORE it happens
-- Estimate Remaining Useful Life (RUL)
-- Enable predictive maintenance
-- Reduce downtime & maintenance cost
+- ❌ High maintenance cost
+- ❌ Flight delays
+- ❌ Safety risks
+
+### 👉 BeTwin-AI solves this by:
+
+- Predicting **Remaining Useful Life (RUL)**
+- Monitoring engine degradation patterns
+- Enabling **predictive maintenance before failure**
+- Reducing downtime and operational risk
 
 ---
 
-# 🧠 System Evolution (IMPORTANT - DEVELOPMENT JOURNEY)
+# 🧠 System Evolution (REAL-WORLD ML DEBUGGING JOURNEY)
 
-This project went through multiple **real-world ML debugging phases**:
+This project was not just built — it was **debugged like a real industrial ML system**.
 
-## ❌ Initial Issues
+---
 
-- Same prediction for all engine IDs (e.g., 90.24 everywhere)
-- Incorrect sequence extraction
-- Scaler mismatch issues
-- Weak LSTM generalization
-- Data leakage in preprocessing
+## ❌ Initial Problems
 
-## 🔧 Fixes Applied
+- Same prediction for all engines (≈ 90.24 constant output)
+- Broken sliding window logic
+- Scaling mismatch between training & inference
+- Poor temporal feature learning
+- Weak generalization of LSTM model
+- Engine ID independence failure
 
-### 1. 🔄 Fixed Sliding Window Logic
+---
 
-- Implemented proper **30-timestep window extraction**
-- Added random window sampling per engine
+## 🔧 FINAL FIXES APPLIED
 
-### 2. 📉 Fixed Scaling Mismatch
+### 1. 🔄 Correct Sliding Window Engine
 
-- Ensured SAME scaler used in:
-  - training
-  - inference
-- Removed inconsistent normalization issues
+- Fixed sequence extraction logic
+- Ensured **temporal continuity**
+- Removed random inconsistency in inference
 
-### 3. 🧠 Fixed LSTM Input Structure
+---
 
-- Enforced correct shape:
+### 2. 📉 Scaling Consistency Fix
 
-```
+- Unified scaler across training & inference
+- Eliminated feature distribution shift
+- Fixed silent prediction bias issue
 
+---
+
+### 3. 🧠 LSTM Input Standardization
+
+Enforced strict input shape:
+
+```text
 (1, 30, 21)
-
 ```
 
-### 4. ⚙️ Fixed Engine-Specific Predictions
-
-- Each engine now gets:
-  - unique sequence slice
-  - unique sensor variation input
-
-### 5. 🔐 Authentication System Added
-
-- Flask-Login integration
-- Session-based authentication
-- Secure password hashing (bcrypt)
-- Protected routes (dashboard/profile/predict)
-
-### 6. 🛡️ Route Protection Fix
-
-- Added `@login_required`
-- Added global request guard
-- Prevents dashboard bypass without login
+✔ Batch size = 1
+✔ Timesteps = 30
+✔ Features = 21 sensors
 
 ---
 
-# 📊 Final Project Architecture
+### 4. ⚙️ Engine-Specific Prediction Fix
 
+Each engine now generates:
+
+- Unique sensor sequence
+- Independent degradation pattern
+- Realistic RUL variation
+
+---
+
+### 5. 🔐 Dual Authentication System (ENTERPRISE LEVEL)
+
+BeTwin-AI implements **two-layer security architecture**:
+
+---
+
+## 🔑 SESSION-BASED AUTH (Flask-Login)
+
+- Secure login sessions
+- Protected routes (`/dashboard`, `/profile`)
+- Auto logout handling
+- Password hashing using bcrypt
+
+---
+
+## 🔐 JWT AUTH (API SECURITY LAYER)
+
+Implemented for API endpoints:
+
+- Token-based authentication
+- Stateless secure communication
+- Ideal for mobile / external integrations
+
+### Example flow:
+
+```text
+Login → JWT Token Generated → API Access (/predict)
 ```
 
+### Protected endpoint:
+
+```python
+@jwt_required()
+def predict():
 ```
 
+---
+
+### 🛡️ Security Advantages
+
+- Prevents unauthorized API access
+- Protects ML inference endpoint
+- Supports scalable microservices integration
+- Ready for production deployment
+
+---
+
+# 📊 FINAL SYSTEM ARCHITECTURE
+
+```text
                 ┌────────────────────┐
                 │ NASA C-MAPSS Data  │
                 └─────────┬──────────┘
@@ -96,7 +149,7 @@ This project went through multiple **real-world ML debugging phases**:
              │ Data Preprocessing      │
              │ - Cleaning              │
              │ - Scaling               │
-             │ - RUL generation        │
+             │ - RUL Generation        │
              └─────────┬──────────────┘
                        ↓
         ┌──────────────────────────────┐
@@ -107,131 +160,100 @@ This project went through multiple **real-world ML debugging phases**:
     ┌──────────────────────────────────┐
     │ LSTM Deep Learning Model         │
     │ Input: (30 × 21 features)        │
-    │ Output: RUL regression           │
+    │ Output: RUL Regression           │
+    └─────────┬────────────────────────┘
+              ↓
+    ┌──────────────────────────────────┐
+    │ Flask Backend API               │
+    │ + Session Auth + JWT Security   │
     └─────────┬────────────────────────┘
               ↓
     ┌───────────────────────────┐
-    │ Flask API (/predict)      │
-    └─────────┬─────────────────┘
-              ↓
-    ┌───────────────────────────┐
-    │ Web Dashboard (UI)        │
-    │ + Authentication System   │
+    │ Web Dashboard UI          │
+    │ (Protected Routes)        │
     └───────────────────────────┘
-
-```
-
 ```
 
 ---
 
-# 📁 Project Structure
+# 🔐 SECURITY ARCHITECTURE (HIGHLIGHT)
 
-```
+BeTwin-AI is designed with **multi-layer security principles**:
 
-BeTwin-AI/
-│
-├── data/
-│   ├── train_FD001.txt
-│   ├── test_FD001.txt
-│   └── RUL_FD001.txt
-│
-├── results/
-│   ├── model.h5              # Trained LSTM model
-│   └── scaler.pkl           # Fitted scaler (CRITICAL)
-│
-├── src/
-│   ├── app.py               # Main Flask backend (FINAL FIXED)
-│   ├── train.py             # Model training script
-│   ├── preprocessing.py
-│   ├── model.py
-│   ├── config.py
-│   └── main.py
-│
-├── templates/
-│   ├── home.html
-│   ├── about.html
-│   ├── dashboard.html
-│   ├── profile.html
-│   └── auth/
-│       ├── login.html
-│       └── signup.html
-│
-├── static/
-│   ├── css/
-│   ├── js/
-│
-├── betwin_ai.db             # SQLite database
-├── requirements.txt
-├── README.md
-└── .gitignore
+### 🛡️ 1. Authentication Layer
 
-```
+- Flask-Login (session management)
+- Secure password hashing (bcrypt)
+- Login-required route protection
+
+### 🔐 2. API Security Layer
+
+- JWT token authentication
+- Stateless API access control
+- Token-based prediction access
+
+### 🚫 3. Access Control
+
+- Role-based system (admin/user ready)
+- Protected dashboard & profile routes
+- Unauthorized access blocking
+
+### 🔒 4. Data Security
+
+- SQLite secure local DB
+- Hashed credentials storage
+- No plaintext password storage
 
 ---
 
-# 🧠 Machine Learning Model
+# 🧠 MACHINE LEARNING MODEL
 
 ## Model Type
 
-- LSTM (Long Short-Term Memory Neural Network)
+- LSTM (Long Short-Term Memory Network)
 
-## Input Format
+## Input Shape
 
-```
-
-30 time steps × 21 sensor features
-
+```text
+30 timesteps × 21 sensor features
 ```
 
 ## Output
 
+```text
+Continuous RUL prediction (regression)
 ```
 
-Continuous RUL (Regression Output)
+## Training Strategy
 
-```
-
-## Training Details
-
-- Loss Function: Mean Squared Error (MSE)
-- Optimizer: Adam
-- Sequence Learning: Sliding Window
-- Normalization: MinMaxScaler / StandardScaler (fixed consistency issue)
+- Sliding window time-series learning
+- MSE loss function
+- Adam optimizer
+- Sequence-based supervised learning
 
 ---
 
-# 🔥 Key Fixes That Solved “Same Prediction Problem”
+# 🔥 KEY FIX: “90.24 CONSTANT PREDICTION BUG”
 
-### ❌ Problem
+## ❌ Root Cause
 
-All engine IDs gave same prediction (≈ 90.24)
-
-### 🔍 Root Cause
-
-- Same sequence input structure
-- Poor variability in feature windows
+- Random window sampling
 - Scaling mismatch
-- Non-random sequence selection
+- Temporal inconsistency
+- Engine identity leakage
 
-### ✅ Final Fix
+## ✅ Final Fix
 
-- Randomized sliding window per engine:
-
-```python
-start = np.random.randint(0, len(df) - 30)
-```
-
-- Proper feature slicing per engine
-- Ensured engine-specific variability
+- Fixed last-30-cycle window extraction
+- Ensured consistent scaler usage
+- Preserved time-series order
+- Engine-specific inference pipeline
 
 ---
 
-# 🌐 Flask Web Application
+# 🌐 FLASK WEB SYSTEM
 
-## Features
-
-### 🏠 Pages
+## 🏠 Pages
 
 - Home
 - About
@@ -243,45 +265,28 @@ start = np.random.randint(0, len(df) - 30)
 
 ## 🔐 Authentication System
 
-### Features Implemented
-
-- User signup with validation
-- Secure password hashing (bcrypt)
-- Session-based login (Flask-Login)
-- Auto login redirect
-- Logout system
-- Protected routes
-
-### Protected Pages
-
-- `/dashboard`
-- `/profile`
-- `/predict`
+- User registration system
+- Secure login/logout
+- Session persistence
+- JWT API authentication
+- Route protection middleware
 
 ---
 
-## 🧾 Database (SQLite)
+# 🔌 API REFERENCE
 
-### Table: `User`
-
-| Field    | Type    |
-| -------- | ------- |
-| id       | Integer |
-| fullname | String  |
-| email    | String  |
-| company  | String  |
-| password | Hashed  |
-
----
-
-# 🔌 API Reference
-
-## 🔮 Predict Engine RUL
+## 🔮 Predict RUL
 
 ### Endpoint
 
-```
+```http
 POST /predict
+```
+
+### JWT Required
+
+```text
+Authorization: Bearer <token>
 ```
 
 ### Request
@@ -305,14 +310,15 @@ POST /predict
 
 ---
 
-# ⚙️ Tech Stack
+# ⚙️ TECH STACK
 
 ## Backend
 
 - Flask
 - Flask-Login
-- Flask-SQLAlchemy
+- Flask-JWT-Extended
 - Flask-Bcrypt
+- SQLAlchemy
 - TensorFlow / Keras
 
 ## Frontend
@@ -330,55 +336,29 @@ POST /predict
 
 ---
 
-# 🚀 How to Run
+# 🚀 DEPLOYMENT READY FEATURES
 
-## 1. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-## 2. Train Model (Optional)
-
-```bash
-python src/train.py
-```
-
-## 3. Run App
-
-```bash
-python src/app.py
-```
-
-Open:
-
-```
-http://127.0.0.1:5000
-```
+✔ Production-ready Flask architecture
+✔ JWT-secured APIs
+✔ Session authentication system
+✔ Scalable ML inference pipeline
+✔ Modular project structure
+✔ Cloud deployment compatible
 
 ---
 
-# 🧪 Debugging Highlights
+# 🧪 DEBUGGING ACHIEVEMENTS
 
-- Fixed identical prediction issue (90.24 bug)
-- Fixed scaler version mismatch warning
-- Fixed sequence extraction bug
-- Fixed Flask login bypass issue
-- Stabilized inference pipeline
+- Fixed constant prediction collapse (90.24 issue)
+- Fixed scaling inconsistency bug
+- Fixed LSTM sequence mismatch
+- Fixed authentication bypass vulnerability
+- Stabilized ML inference pipeline
 - Improved model generalization
 
 ---
 
-# 📌 Key Takeaways
-
-- ML pipeline must match training EXACTLY during inference
-- Scaling consistency is critical
-- Sliding window is essential for time-series LSTM
-- Authentication must be enforced at route + session level
-
----
-
-# 👨‍💻 Authors
+# 👨‍💻 AUTHORS
 
 - Riddhima Rajput
 - Diksha Sharma
@@ -386,30 +366,23 @@ http://127.0.0.1:5000
 
 ---
 
-# 🚀 Future Enhancements
+# 🚀 FUTURE ROADMAP
 
-- Real-time sensor streaming (IoT integration)
-- Docker containerization
-- CI/CD deployment pipeline
-- Cloud hosting (AWS / Render)
-- Graph-based RUL visualization
-- Model retraining automation
+- Real-time IoT sensor streaming
+- Dockerized microservice deployment
+- AWS / Render production scaling
+- Model retraining pipeline automation
+- Advanced Transformer-based RUL model
+- Explainable AI (XAI) for engine failure reasons
 
 ---
 
-# ⭐ Project Status
+# ⭐ PROJECT STATUS
 
-✔ Fully functional ML + Web App
-✔ Authentication system integrated
-✔ Fixed prediction pipeline issues
+✔ Fully functional AI + Web System
+✔ Secure authentication (Session + JWT)
+✔ Production-grade ML pipeline
 ✔ Deployment-ready architecture
+✔ Fixed major predictive modeling issues
 
 ---
-
-```
-
----
-
-
-
-```

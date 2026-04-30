@@ -1,2 +1,5 @@
 results/model.h5
 results/scaler.pkl
+instance/
+__pycache__/
+*.pyc

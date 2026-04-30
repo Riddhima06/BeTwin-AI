@@ -45,7 +45,7 @@ def load_data():
     columns = ["engine_id", "cycle", "op1", "op2", "op3"]
     columns.extend(f"sensor_{index}" for index in range(1, 22))
 
-    data = pd.read_csv("data/train_FD001.txt", sep=r"\s+", header=None)
+    data = pd.read_csv("../data/train_FD001.txt", sep=r"\s+", header=None)
     data = data.dropna(axis=1)
     data.columns = columns
     return data

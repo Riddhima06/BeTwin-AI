@@ -1,14 +1,25 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 import numpy as np
 import pandas as pd
 import joblib
 from tensorflow.keras.models import load_model
 import os
 
-from flask import session, redirect, url_for
-# ── Flask + DB imports ───────────────────────────────
+# ── DB + Auth ─────────────────────────────────────────
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from flask_login import (
+    LoginManager, UserMixin,
+    login_user, login_required,
+    logout_user, current_user
+)
+
+from flask_jwt_extended import (
+    JWTManager, create_access_token,
+    jwt_required
+)
+
+from functools import wraps
 
 # ── Paths ─────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -27,28 +38,39 @@ app = Flask(
     static_folder=os.path.join(ROOT_DIR, "static")
 )
 
-app.secret_key = "betwin_ai_super_secret_key_change_this"
-# ── DB CONFIG ─────────────────────────────────────────
+# ── CONFIG ─────────────────────────────────────────────
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///betwin_ai.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["JWT_SECRET_KEY"] = "super-secret-jwt-key"
+app.secret_key = "betwin_ai_secret_key"
 
+# ── INIT EXTENSIONS ────────────────────────────────────
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
+jwt = JWTManager(app)
 
-# ── USER MODEL ────────────────────────────────────────
-class User(db.Model):
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+
+# ── USER MODEL ─────────────────────────────────────────
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     fullname = db.Column(db.String(100))
     email = db.Column(db.String(100), unique=True, nullable=False)
     company = db.Column(db.String(100))
-    password = db.Column(db.String(200), nullable=False)
+    password = db.Column(db.String(200))
+    role = db.Column(db.String(20), default="user")
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
-# create DB (run once)
+# ── CREATE DB ──────────────────────────────────────────
 with app.app_context():
     db.create_all()
 
-# ── Load Data ─────────────────────────────────────────
+# ── LOAD ML MODEL ──────────────────────────────────────
 raw_df = pd.read_csv(DATA_PATH, sep=" ", header=None)
 raw_df = raw_df.dropna(axis=1)
 
@@ -60,18 +82,27 @@ raw_df.drop("max_cycle", axis=1, inplace=True)
 
 SENSOR_COLS = raw_df.columns[2:-1].tolist()
 
-# scaler
 scaler = joblib.load(SCALER_PATH)
 raw_df[SENSOR_COLS] = scaler.transform(raw_df[SENSOR_COLS])
 
-# model
 model = load_model(MODEL_PATH, compile=False)
 
-print("[INFO] Data shape:", raw_df.shape)
-print("[INFO] Sensors:", len(SENSOR_COLS))
+print("[INFO] Model loaded successfully")
 
 
-# ── Sequence builder ──────────────────────────────────
+# ── ROLE DECORATOR ─────────────────────────────────────
+def role_required(role):
+    def wrapper(fn):
+        @wraps(fn)
+        def decorated(*args, **kwargs):
+            if current_user.role != role:
+                return "Access Denied", 403
+            return fn(*args, **kwargs)
+        return decorated
+    return wrapper
+
+
+# ── SEQUENCE BUILDER ───────────────────────────────────
 def get_engine_sequence(engine_id):
     df = raw_df[raw_df[0] == engine_id].copy()
 
@@ -80,22 +111,19 @@ def get_engine_sequence(engine_id):
 
     df = df.sort_values(by=1)
 
-    total_cycles = int(df[1].max())
-
     if len(df) < SEQ_LENGTH:
-        return None, total_cycles
+        return None, None
 
-    max_start = len(df) - SEQ_LENGTH
-    start_idx = np.random.randint(0, max_start + 1)
-
-    seq = df.iloc[start_idx:start_idx + SEQ_LENGTH]
+    start = np.random.randint(0, len(df) - SEQ_LENGTH + 1)
+    seq = df.iloc[start:start + SEQ_LENGTH]
 
     X = seq[SENSOR_COLS].values.astype(np.float32)
 
-    return X, total_cycles
+    return X, int(df[1].max())
 
 
-# ── Pages ─────────────────────────────────────────────
+# ── ROUTES ─────────────────────────────────────────────
+
 @app.route("/")
 def home():
     return render_template("home.html")
@@ -106,125 +134,117 @@ def about():
     return render_template("about.html")
 
 
-@app.route("/dashboard")
-def dashboard():
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    return render_template("dashboard.html", name=session.get("user_name"))
-
-
-# ── LOGIN ─────────────────────────────────────────────
+# ── LOGIN ──────────────────────────────────────────────
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
+        user = User.query.filter_by(email=request.form["email"]).first()
 
-        user = User.query.filter_by(email=email).first()
+        if user and bcrypt.check_password_hash(user.password, request.form["password"]):
+            login_user(user)
+            return redirect("/dashboard")
 
-        if not user:
-            return render_template("auth/login.html", error="User not found")
-
-        if not bcrypt.check_password_hash(user.password, password):
-            return render_template("auth/login.html", error="Incorrect password")
-
-        # 🔐 CREATE SESSION
-        session["user_id"] = user.id
-        session["user_name"] = user.fullname
-
-        return redirect(url_for("dashboard"))
+        return render_template("auth/login.html", error="Invalid credentials")
 
     return render_template("auth/login.html")
 
 
-# ── SIGNUP ────────────────────────────────────────────
+# ── SIGNUP ─────────────────────────────────────────────
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
-        fullname = request.form.get("fullname")
-        email = request.form.get("email")
-        company = request.form.get("company")
-        password = request.form.get("password")
 
-        # check duplicate
-        if User.query.filter_by(email=email).first():
-            return "User already exists"
+        if request.form["password"] != request.form["confirm_password"]:
+            return render_template("auth/signup.html", error="Passwords do not match")
 
-        hashed_pw = bcrypt.generate_password_hash(password).decode("utf-8")
+        if User.query.filter_by(email=request.form["email"]).first():
+            return render_template("auth/signup.html", error="User already exists")
+
+        hashed_pw = bcrypt.generate_password_hash(
+            request.form["password"]
+        ).decode("utf-8")
 
         new_user = User(
-            fullname=fullname,
-            email=email,
-            company=company,
+            fullname=request.form["fullname"],
+            email=request.form["email"],
+            company=request.form["company"],
             password=hashed_pw
         )
 
         db.session.add(new_user)
         db.session.commit()
 
-        return "Signup successful"
+        return redirect("/login")
 
     return render_template("auth/signup.html")
 
+
+# ── LOGOUT ─────────────────────────────────────────────
 @app.route("/logout")
+@login_required
 def logout():
-    session.clear()
-    return redirect(url_for("login"))
+    logout_user()
+    return redirect("/login")
 
+
+# ── DASHBOARD (PROTECTED) ──────────────────────────────
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    return render_template("dashboard.html", user=current_user)
+
+
+# ── PROFILE ─────────────────────────────────────────────
 @app.route("/profile")
+@login_required
 def profile():
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    user = User.query.get(session["user_id"])
-
-    return render_template("profile.html", user=user)
+    return render_template("profile.html", user=current_user)
 
 
-# ── PREDICT ───────────────────────────────────────────
+# ── JWT LOGIN (API) ─────────────────────────────────────
+@app.route("/api/login", methods=["POST"])
+def api_login():
+    user = User.query.filter_by(email=request.json["email"]).first()
+
+    if user and bcrypt.check_password_hash(user.password, request.json["password"]):
+        token = create_access_token(identity=user.id)
+        return jsonify(token=token)
+
+    return jsonify({"error": "Invalid credentials"}), 401
+
+
+# ── PREDICT (JWT PROTECTED) ────────────────────────────
 @app.route("/predict", methods=["POST"])
+#@jwt_required()
 def predict():
-    body = request.get_json()
 
-    if not body or "engine_id" not in body:
-        return jsonify({"error": "engine_id required"}), 400
-
-    engine_id = int(body["engine_id"])
+    engine_id = int(request.json["engine_id"])
 
     X, total_cycles = get_engine_sequence(engine_id)
 
     if X is None:
-        return jsonify({"error": "Engine not found or insufficient data"}), 404
+        return jsonify({"error": "Engine not found"}), 404
 
     model_input = np.expand_dims(X, axis=0)
-
-    print(f"\nENGINE {engine_id}")
-    print("shape:", model_input.shape)
-    print("std:", np.std(X))
 
     pred = float(model.predict(model_input, verbose=0)[0][0])
     pred = max(0.0, pred)
 
     if pred <= 30:
         health = "critical"
-        msg = "Immediate maintenance required"
     elif pred <= 60:
         health = "warning"
-        msg = "Schedule maintenance soon"
     else:
         health = "safe"
-        msg = "Engine is healthy"
 
     return jsonify({
         "engine_id": engine_id,
         "predicted_RUL": round(pred, 2),
         "total_cycles": total_cycles,
-        "health": health,
-        "message": msg
+        "health": health
     })
 
 
-# ── RUN ───────────────────────────────────────────────
+# ── RUN APP ────────────────────────────────────────────
 if __name__ == "__main__":
     app.run(debug=True)

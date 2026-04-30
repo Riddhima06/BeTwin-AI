@@ -4,12 +4,22 @@
     <meta charset="UTF-8" />
     <title>BeTwin-AI | Dashboard</title>
     <style>
-      body {
+      @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap");
+
+      * {
+        box-sizing: border-box;
         margin: 0;
+        padding: 0;
+      }
+
+      body {
         font-family: Arial, Helvetica, sans-serif;
         background: radial-gradient(circle at top, #1b0029, #000);
         color: white;
+        min-height: 100vh;
       }
+
+      /* ── Navbar ── */
       .navbar {
         display: flex;
         justify-content: space-between;
@@ -18,8 +28,9 @@
         background: linear-gradient(90deg, #4b136b, #6b1fb1);
       }
       .navbar .logo {
-        font-size: 22px;
-        font-weight: 700;
+        font-family: "Orbitron", sans-serif;
+        font-size: 20px;
+        font-weight: 900;
       }
       .navbar a {
         color: white;
@@ -30,102 +41,370 @@
       .launch-btn {
         background: linear-gradient(90deg, #ff4fd8, #7b5cff);
         border: none;
-        padding: 10px 20px;
+        padding: 10px 22px;
         border-radius: 20px;
         color: white;
         cursor: pointer;
-        font-weight: 600;
+        font-weight: 700;
+        font-family: "Orbitron", sans-serif;
+        font-size: 12px;
+        margin-left: 25px;
       }
+
+      /* ── Page ── */
       .container {
-        max-width: 900px;
-        margin: 70px auto;
+        max-width: 760px;
+        margin: 60px auto;
+        padding: 0 20px;
         text-align: center;
       }
+      .page-label {
+        font-family: "Orbitron", sans-serif;
+        color: #a855f7;
+        font-size: 11px;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+      }
       h1 {
-        font-size: 40px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 38px;
+        font-weight: 900;
         margin-bottom: 10px;
       }
       .subtitle {
-        color: #cfcfcf;
-        margin-bottom: 30px;
+        color: #9ca3af;
+        margin-bottom: 40px;
+        font-size: 15px;
       }
+
+      /* ── Card ── */
       .card {
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 35px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(168, 85, 247, 0.25);
+        border-radius: 24px;
+        padding: 40px;
       }
-      .input-box {
-        margin: 15px 0 20px;
-      }
-      input {
-        padding: 10px 14px;
-        border-radius: 10px;
-        border: none;
-        outline: none;
-        font-size: 14px;
-        width: 160px;
-      }
-      .pred-box {
-        margin-top: 18px;
-        font-size: 22px;
-      }
-      #rulValue {
-        color: #ff6cff;
+      .card-title {
+        font-family: "Orbitron", sans-serif;
+        font-size: 18px;
         font-weight: 700;
-        font-size: 30px;
+        margin-bottom: 28px;
       }
-      #healthMsg {
-        margin-top: 12px;
-        font-size: 16px;
+
+      /* ── Input row ── */
+      .input-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
       }
-      .safe {
-        color: #42ffb0;
-      }
-      .alert {
-        color: #ff7070;
-      }
-      .footer {
-        margin-top: 100px;
-        text-align: center;
-        color: #888;
+      .input-label {
+        font-family: "Orbitron", sans-serif;
         font-size: 13px;
+        color: #d1d5db;
+        white-space: nowrap;
+      }
+      input[type="number"] {
+        background: #111;
+        border: 1px solid #6d28d9;
+        border-radius: 12px;
+        color: white;
+        font-family: "Orbitron", sans-serif;
+        font-size: 16px;
+        padding: 10px 18px;
+        width: 140px;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      input[type="number"]:focus {
+        border-color: #a855f7;
+      }
+      .predict-btn {
+        background: linear-gradient(90deg, #7c3aed, #db2777);
+        border: none;
+        padding: 11px 24px;
+        border-radius: 12px;
+        color: white;
+        font-family: "Orbitron", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
+      }
+      .predict-btn:hover {
+        opacity: 0.85;
+        transform: scale(1.04);
+      }
+      .predict-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* ── Loader ── */
+      .loader {
+        display: none;
+        justify-content: center;
+        margin: 16px 0;
+      }
+      .spinner {
+        width: 32px;
+        height: 32px;
+        border: 4px solid #6d28d9;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ── Result card ── */
+      .result {
+        display: none;
+      }
+
+      .rul-label {
+        font-family: "Orbitron", sans-serif;
+        font-size: 11px;
+        letter-spacing: 0.3em;
+        color: #6b7280;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .rul-number {
+        font-family: "Orbitron", sans-serif;
+        font-size: 72px;
+        font-weight: 900;
+        background: linear-gradient(90deg, #a855f7, #ec4899);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1;
+      }
+      .rul-unit {
+        font-family: "Orbitron", sans-serif;
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 6px;
+        margin-bottom: 24px;
+      }
+
+      /* ── Stats row ── */
+      .stats-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+      .stat-box {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(109, 40, 217, 0.3);
+        border-radius: 16px;
+        padding: 16px 10px;
+      }
+      .stat-label {
+        font-family: "Orbitron", sans-serif;
+        font-size: 9px;
+        letter-spacing: 0.2em;
+        color: #6b7280;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .stat-value {
+        font-family: "Orbitron", sans-serif;
+        font-size: 20px;
+        font-weight: 900;
+        color: white;
+      }
+
+      /* ── Health bar ── */
+      .bar-labels {
+        display: flex;
+        justify-content: space-between;
+        font-family: "Orbitron", sans-serif;
+        font-size: 9px;
+        color: #4b5563;
+        margin-bottom: 6px;
+      }
+      .bar-track {
+        background: #111;
+        border-radius: 999px;
+        height: 12px;
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 4px;
+      }
+      .bar-zones {
+        position: absolute;
+        inset: 0;
+        display: flex;
+      }
+      .bar-zones div {
+        flex: 1;
+      }
+      .zone-red {
+        background: rgba(239, 68, 68, 0.15);
+      }
+      .zone-yellow {
+        background: rgba(234, 179, 8, 0.15);
+      }
+      .zone-green {
+        background: rgba(34, 197, 94, 0.1);
+      }
+      .bar-fill {
+        height: 100%;
+        border-radius: 999px;
+        transition:
+          width 0.8s ease,
+          background-color 0.4s;
+        position: relative;
+        z-index: 1;
+      }
+      .bar-sublabels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+        color: #374151;
+        margin-bottom: 20px;
+      }
+
+      /* ── Status banner ── */
+      .status-banner {
+        border-radius: 14px;
+        padding: 14px 20px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+      }
+      .banner-safe {
+        background: rgba(34, 197, 94, 0.1);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        color: #4ade80;
+      }
+      .banner-warning {
+        background: rgba(234, 179, 8, 0.1);
+        border: 1px solid rgba(234, 179, 8, 0.35);
+        color: #facc15;
+      }
+      .banner-critical {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.35);
+        color: #f87171;
+      }
+
+      /* ── Error ── */
+      .error-msg {
+        display: none;
+        font-family: "Orbitron", sans-serif;
+        font-size: 13px;
+        color: #f87171;
+        margin-top: 16px;
+      }
+
+      /* ── Footer ── */
+      .footer {
+        text-align: center;
+        color: #374151;
+        font-size: 13px;
+        padding: 40px 0 24px;
       }
     </style>
   </head>
   <body>
+    <!-- Navbar -->
     <div class="navbar">
       <div class="logo">BeTwin-AI</div>
       <div>
         <a href="/">Home</a>
         <a href="/about">About</a>
         <a href="/dashboard">Dashboard</a>
-        <button class="launch-btn" id="launchBtn">LAUNCH MONITOR</button>
+        <!-- FIX: navbar button now scrolls/focuses rather than calling runPredict() -->
+        <button
+          class="launch-btn"
+          onclick="document.getElementById('engineId').focus()"
+        >
+          LAUNCH MONITOR
+        </button>
       </div>
     </div>
 
+    <!-- Main -->
     <div class="container">
+      <p class="page-label">Digital Twin</p>
       <h1>Engine Health Monitor</h1>
-      <div class="subtitle">
+      <p class="subtitle">
         Select an engine and view its real Remaining Useful Life prediction.
-      </div>
+      </p>
 
       <div class="card">
-        <h2>Prediction Panel</h2>
+        <div class="card-title">Prediction Panel</div>
 
-        <!-- user chooses which real engine to inspect -->
-        <div class="input-box">
-          Engine ID :
-          <input type="number" id="engineId" placeholder="e.g. 11" />
+        <!-- Input -->
+        <div class="input-row">
+          <span class="input-label">Engine ID :</span>
+          <input type="number" id="engineId" min="1" max="100" value="1" />
+          <button class="predict-btn" id="predictBtn" onclick="runPredict()">
+            PREDICT
+          </button>
         </div>
 
-        <div class="pred-box">
-          Predicted RUL :
-          <span id="rulValue">--</span>
+        <!-- Spinner -->
+        <div class="loader" id="loader">
+          <div class="spinner"></div>
         </div>
 
-        <!-- health message appears here -->
-        <div id="healthMsg"></div>
+        <!-- Results -->
+        <div class="result" id="result">
+          <div class="rul-label">Predicted RUL</div>
+          <div class="rul-number" id="rulNumber">—</div>
+          <div class="rul-unit">cycles remaining</div>
+
+          <!-- Stats -->
+          <div class="stats-row">
+            <div class="stat-box">
+              <div class="stat-label">Engine ID</div>
+              <div class="stat-value" id="statEngine">—</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Total Cycles</div>
+              <div class="stat-value" id="statCycles">—</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Health</div>
+              <div class="stat-value" id="statHealth">—</div>
+            </div>
+          </div>
+
+          <!-- Health Bar -->
+          <div class="bar-labels">
+            <span>Critical</span><span>Warning</span><span>Safe</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-zones">
+              <div class="zone-red"></div>
+              <div class="zone-yellow"></div>
+              <div class="zone-green"></div>
+            </div>
+            <div class="bar-fill" id="barFill" style="width: 0%"></div>
+          </div>
+          <div class="bar-sublabels">
+            <span>0</span><span>60</span><span>125+</span>
+          </div>
+
+          <!-- Banner -->
+          <div class="status-banner" id="statusBanner"></div>
+        </div>
+
+        <!-- Error -->
+        <div class="error-msg" id="errorMsg"></div>
       </div>
     </div>
 
@@ -134,52 +413,98 @@
     </div>
 
     <script>
-      document
-        .getElementById("launchBtn")
-        .addEventListener("click", async () => {
-          const engineId = document.getElementById("engineId").value.trim();
-          if (!engineId) {
-            alert("Please enter an engine ID");
+      async function runPredict() {
+        const engineId = parseInt(document.getElementById("engineId").value);
+        const btn = document.getElementById("predictBtn");
+        const loader = document.getElementById("loader");
+        const result = document.getElementById("result");
+        const errorMsg = document.getElementById("errorMsg");
+
+        // Validate
+        if (!engineId || engineId < 1 || engineId > 100) {
+          errorMsg.textContent =
+            "Please enter a valid Engine ID between 1 and 100.";
+          errorMsg.style.display = "block";
+          return;
+        }
+
+        // Reset UI
+        result.style.display = "none";
+        errorMsg.style.display = "none";
+        loader.style.display = "flex";
+        btn.disabled = true;
+
+        try {
+          const res = await fetch("/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ engine_id: engineId }),
+          });
+          const data = await res.json();
+
+          loader.style.display = "none";
+          btn.disabled = false;
+
+          if (!res.ok) {
+            errorMsg.textContent = data.error || "Prediction failed.";
+            errorMsg.style.display = "block";
             return;
           }
 
-          document.getElementById("rulValue").innerText = "Running...";
-          const msg = document.getElementById("healthMsg");
-          msg.innerText = "";
-          msg.className = "";
+          // ── Fill values ──
+          document.getElementById("rulNumber").textContent = data.predicted_RUL;
+          document.getElementById("statEngine").textContent = data.engine_id;
+          document.getElementById("statCycles").textContent = data.total_cycles;
 
-          try {
-            const response = await fetch("/predict", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ engine_id: engineId }),
-            });
+          const rul = data.predicted_RUL;
+          const barWidth = Math.min((rul / 125) * 100, 100).toFixed(1);
+          const barFill = document.getElementById("barFill");
+          barFill.style.width = barWidth + "%";
 
-            const data = await response.json();
+          const healthEl = document.getElementById("statHealth");
+          const banner = document.getElementById("statusBanner");
 
-            if (!response.ok) {
-              alert(data.error || "Prediction failed");
-              document.getElementById("rulValue").innerText = "--";
-              return;
-            }
-
-            document.getElementById("rulValue").innerText = Number(
-              data.predicted_RUL,
-            ).toFixed(2);
-
-            // show health status clearly for the user
-            if (data.health === "safe") {
-              msg.innerText = "✔ " + data.message;
-              msg.className = "safe";
-            } else {
-              msg.innerText = "⚠ " + data.message;
-              msg.className = "alert";
-            }
-          } catch (err) {
-            console.error(err);
-            alert("Backend server not reachable");
-            document.getElementById("rulValue").innerText = "--";
+          // FIX: Complete health status logic with all three branches
+          if (data.health === "critical") {
+            healthEl.textContent = "CRITICAL";
+            healthEl.style.color = "#f87171";
+            barFill.style.backgroundColor = "#ef4444";
+            banner.textContent =
+              data.message || "⚠ Immediate maintenance required";
+            banner.className = "status-banner banner-critical";
+          } else if (data.health === "warning") {
+            healthEl.textContent = "WARNING";
+            healthEl.style.color = "#facc15";
+            barFill.style.backgroundColor = "#eab308";
+            banner.textContent = data.message || "⚡ Schedule maintenance soon";
+            banner.className = "status-banner banner-warning";
+          } else {
+            // safe
+            healthEl.textContent = "SAFE";
+            healthEl.style.color = "#4ade80";
+            barFill.style.backgroundColor = "#22c55e";
+            banner.textContent =
+              data.message || "✔ Engine health is within safe limits";
+            banner.className = "status-banner banner-safe";
           }
+
+          // Show result panel
+          result.style.display = "block";
+        } catch (err) {
+          loader.style.display = "none";
+          btn.disabled = false;
+          errorMsg.textContent =
+            "Network error: Could not reach the prediction server. Make sure Flask is running.";
+          errorMsg.style.display = "block";
+          console.error("Fetch error:", err);
+        }
+      }
+
+      // Allow pressing Enter in the input field to trigger prediction
+      document
+        .getElementById("engineId")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter") runPredict();
         });
     </script>
   </body>

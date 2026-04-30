@@ -215,7 +215,7 @@ def api_login():
 
 # ── PREDICT (JWT PROTECTED) ────────────────────────────
 @app.route("/predict", methods=["POST"])
-#@jwt_required()
+@jwt_required()
 def predict():
 
     engine_id = int(request.json["engine_id"])
@@ -247,4 +247,4 @@ def predict():
 
 # ── RUN APP ────────────────────────────────────────────
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=10000)

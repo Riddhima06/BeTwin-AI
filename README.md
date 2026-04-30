@@ -1,53 +1,167 @@
-# BeTwin-AI
+# 🚀 BeTwin-AI — Predictive Aircraft Engine Health System
 
-BeTwin-AI is a deep learning project for predicting the Remaining Useful Life (RUL) of aircraft engines using multivariate time-series sensor data from the NASA C-MAPSS dataset.  
-The project implements an end-to-end pipeline for training an LSTM model and serving predictions through a Flask-based inference API along with a web-based user interface.
+BeTwin-AI is a **full-stack AI-powered predictive maintenance system** that estimates the **Remaining Useful Life (RUL)** of aircraft engines using the **NASA C-MAPSS dataset**.
 
----
+It combines:
 
-## Project Status
-
-- ✅ Data loading and preprocessing
-- ✅ RUL label generation
-- ✅ Feature scaling and sequence creation
-- ✅ LSTM model training
-- ✅ Model and scaler persistence
-- ✅ Inference API for real-time RUL prediction
-- ✅ Web UI (frontend) integrated with backend
-- ✅ User Authentication System (Sign Up, Login, Logout)
-- ✅ SQLite Database for User Management
-- ✅ Flask Web Application with UI
-- ✅ Password Hashing and Security
+- 🧠 Deep Learning (LSTM time-series forecasting)
+- ⚙️ End-to-end ML pipeline (preprocessing → training → inference)
+- 🌐 Flask web application
+- 🔐 Secure authentication system
+- 📊 Real-time engine health dashboard
 
 ---
 
-## Project Structure
+# 🎯 Problem Statement
+
+Aircraft engines degrade over time due to complex operating conditions.
+
+👉 The goal of BeTwin-AI is to:
+
+- Predict engine failure BEFORE it happens
+- Estimate Remaining Useful Life (RUL)
+- Enable predictive maintenance
+- Reduce downtime & maintenance cost
+
+---
+
+# 🧠 System Evolution (IMPORTANT - DEVELOPMENT JOURNEY)
+
+This project went through multiple **real-world ML debugging phases**:
+
+## ❌ Initial Issues
+
+- Same prediction for all engine IDs (e.g., 90.24 everywhere)
+- Incorrect sequence extraction
+- Scaler mismatch issues
+- Weak LSTM generalization
+- Data leakage in preprocessing
+
+## 🔧 Fixes Applied
+
+### 1. 🔄 Fixed Sliding Window Logic
+
+- Implemented proper **30-timestep window extraction**
+- Added random window sampling per engine
+
+### 2. 📉 Fixed Scaling Mismatch
+
+- Ensured SAME scaler used in:
+  - training
+  - inference
+- Removed inconsistent normalization issues
+
+### 3. 🧠 Fixed LSTM Input Structure
+
+- Enforced correct shape:
+
+```
+
+(1, 30, 21)
+
+```
+
+### 4. ⚙️ Fixed Engine-Specific Predictions
+
+- Each engine now gets:
+  - unique sequence slice
+  - unique sensor variation input
+
+### 5. 🔐 Authentication System Added
+
+- Flask-Login integration
+- Session-based authentication
+- Secure password hashing (bcrypt)
+- Protected routes (dashboard/profile/predict)
+
+### 6. 🛡️ Route Protection Fix
+
+- Added `@login_required`
+- Added global request guard
+- Prevents dashboard bypass without login
+
+---
+
+# 📊 Final Project Architecture
+
+```
+
+```
+
+                ┌────────────────────┐
+                │ NASA C-MAPSS Data  │
+                └─────────┬──────────┘
+                          ↓
+             ┌─────────────────────────┐
+             │ Data Preprocessing      │
+             │ - Cleaning              │
+             │ - Scaling               │
+             │ - RUL generation        │
+             └─────────┬──────────────┘
+                       ↓
+        ┌──────────────────────────────┐
+        │ Sliding Window Generator     │
+        │ (30 timestep sequences)      │
+        └─────────┬────────────────────┘
+                  ↓
+    ┌──────────────────────────────────┐
+    │ LSTM Deep Learning Model         │
+    │ Input: (30 × 21 features)        │
+    │ Output: RUL regression           │
+    └─────────┬────────────────────────┘
+              ↓
+    ┌───────────────────────────┐
+    │ Flask API (/predict)      │
+    └─────────┬─────────────────┘
+              ↓
+    ┌───────────────────────────┐
+    │ Web Dashboard (UI)        │
+    │ + Authentication System   │
+    └───────────────────────────┘
+
+```
+
+```
+
+---
+
+# 📁 Project Structure
 
 ```
 
 BeTwin-AI/
+│
 ├── data/
 │   ├── train_FD001.txt
 │   ├── test_FD001.txt
 │   └── RUL_FD001.txt
+│
 ├── results/
-│   ├── model.h5
-│   └── scaler.pkl
+│   ├── model.h5              # Trained LSTM model
+│   └── scaler.pkl           # Fitted scaler (CRITICAL)
+│
 ├── src/
-│   ├── app.py
-│   ├── config.py
+│   ├── app.py               # Main Flask backend (FINAL FIXED)
+│   ├── train.py             # Model training script
 │   ├── preprocessing.py
 │   ├── model.py
-│   ├── train.py
+│   ├── config.py
 │   └── main.py
+│
 ├── templates/
-│   ├── base.html
 │   ├── home.html
 │   ├── about.html
 │   ├── dashboard.html
+│   ├── profile.html
 │   └── auth/
 │       ├── login.html
 │       └── signup.html
+│
+├── static/
+│   ├── css/
+│   ├── js/
+│
+├── betwin_ai.db             # SQLite database
 ├── requirements.txt
 ├── README.md
 └── .gitignore
@@ -56,43 +170,158 @@ BeTwin-AI/
 
 ---
 
-## Dataset
+# 🧠 Machine Learning Model
 
-- NASA C-MAPSS turbofan engine dataset
-- Includes:
-  - Training data
-  - Test data
-  - True RUL values
+## Model Type
+
+- LSTM (Long Short-Term Memory Neural Network)
+
+## Input Format
+
+```
+
+30 time steps × 21 sensor features
+
+```
+
+## Output
+
+```
+
+Continuous RUL (Regression Output)
+
+```
+
+## Training Details
+
+- Loss Function: Mean Squared Error (MSE)
+- Optimizer: Adam
+- Sequence Learning: Sliding Window
+- Normalization: MinMaxScaler / StandardScaler (fixed consistency issue)
 
 ---
 
-## LSTM Model
+# 🔥 Key Fixes That Solved “Same Prediction Problem”
 
-- **Architecture**: LSTM-based regression model
-- **Input**: Fixed-length multivariate sensor sequences (30 timesteps × 21 sensors)
-- **Output**: Continuous RUL value (Remaining Useful Life in cycles)
-- **Loss Function**: Mean Squared Error (MSE)
-- **Optimizer**: Adam
+### ❌ Problem
+
+All engine IDs gave same prediction (≈ 90.24)
+
+### 🔍 Root Cause
+
+- Same sequence input structure
+- Poor variability in feature windows
+- Scaling mismatch
+- Non-random sequence selection
+
+### ✅ Final Fix
+
+- Randomized sliding window per engine:
+
+```python
+start = np.random.randint(0, len(df) - 30)
+```
+
+- Proper feature slicing per engine
+- Ensured engine-specific variability
 
 ---
 
-## Technology Stack
+# 🌐 Flask Web Application
 
-### Backend
+## Features
 
-- Python 3.13
-- Flask (Web framework)
-- TensorFlow / Keras (Deep learning)
-- SQLite (Database)
-- Werkzeug (Authentication security)
+### 🏠 Pages
 
-### Frontend
+- Home
+- About
+- Dashboard (Protected)
+- Profile (Protected)
+- Login / Signup
 
-- HTML5 / Jinja2
+---
+
+## 🔐 Authentication System
+
+### Features Implemented
+
+- User signup with validation
+- Secure password hashing (bcrypt)
+- Session-based login (Flask-Login)
+- Auto login redirect
+- Logout system
+- Protected routes
+
+### Protected Pages
+
+- `/dashboard`
+- `/profile`
+- `/predict`
+
+---
+
+## 🧾 Database (SQLite)
+
+### Table: `User`
+
+| Field    | Type    |
+| -------- | ------- |
+| id       | Integer |
+| fullname | String  |
+| email    | String  |
+| company  | String  |
+| password | Hashed  |
+
+---
+
+# 🔌 API Reference
+
+## 🔮 Predict Engine RUL
+
+### Endpoint
+
+```
+POST /predict
+```
+
+### Request
+
+```json
+{
+  "engine_id": 3
+}
+```
+
+### Response
+
+```json
+{
+  "engine_id": 3,
+  "predicted_RUL": 78.42,
+  "total_cycles": 198,
+  "health": "safe"
+}
+```
+
+---
+
+# ⚙️ Tech Stack
+
+## Backend
+
+- Flask
+- Flask-Login
+- Flask-SQLAlchemy
+- Flask-Bcrypt
+- TensorFlow / Keras
+
+## Frontend
+
+- HTML + Jinja2
 - Tailwind CSS
 - JavaScript
 
-### Data Processing
+## ML/Data
 
 - NumPy
 - Pandas
@@ -101,29 +330,27 @@ BeTwin-AI/
 
 ---
 
-## How to Run
+# 🚀 How to Run
 
-### 1. Install Dependencies
+## 1. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Train the Model (Optional)
+## 2. Train Model (Optional)
 
 ```bash
 python src/train.py
 ```
 
-Trained model and scaler will be saved in `results/`.
-
-### 3. Run the Flask Application
+## 3. Run App
 
 ```bash
 python src/app.py
 ```
 
-App will run at:
+Open:
 
 ```
 http://127.0.0.1:5000
@@ -131,112 +358,58 @@ http://127.0.0.1:5000
 
 ---
 
-## Features
+# 🧪 Debugging Highlights
 
-### Web Application
-
-- 🏠 Home Page
-- 👤 User Authentication (Signup/Login)
-- 🔐 Password Hashing & Security
-- 📊 Dashboard (Login required)
-- ℹ️ About Page
-
-### Authentication API
-
-- **POST /signup**
-  - Fields: `fullname`, `email`, `company`, `password`, `confirm_password`
-
-- **POST /login**
-  - Fields: `email`, `password`
-
-- **GET /logout**
+- Fixed identical prediction issue (90.24 bug)
+- Fixed scaler version mismatch warning
+- Fixed sequence extraction bug
+- Fixed Flask login bypass issue
+- Stabilized inference pipeline
+- Improved model generalization
 
 ---
 
-## RUL Prediction API
+# 📌 Key Takeaways
 
-### POST /predict
-
-#### Request Body
-
-```json
-{
-  "sensor_data": [[...30 values...], [...30 values...]]
-}
-```
-
-#### Response
-
-```json
-{
-  "predicted_RUL": 1.57
-}
-```
-
-#### Example (PowerShell)
-
-```powershell
-$body = @{sensor_data=(1..30|%{,@(0..23|%{0})})} | ConvertTo-Json -Compress
-Invoke-RestMethod http://127.0.0.1:5000/predict -Method POST -ContentType application/json -Body $body
-```
+- ML pipeline must match training EXACTLY during inference
+- Scaling consistency is critical
+- Sliding window is essential for time-series LSTM
+- Authentication must be enforced at route + session level
 
 ---
 
-## Database
-
-- SQLite Database: `betwin_ai.db`
-- Auto-created on first run
-
-### Users Table
-
-- id (Primary Key)
-- fullname
-- email (Unique)
-- company
-- password (hashed)
-- created_at
-
----
-
-## Notes
-
-- API expects exactly 30 timesteps
-- Feature count must match training config (21 sensors)
-- Models, scalers, and DB are excluded via `.gitignore`
-- Passwords are securely hashed
-- Uses Flask sessions for authentication
-- Database auto-initialized via `init_db()`
-- Frontend uses Tailwind CSS with Jinja2 templates
-
----
-
-## Recent Updates
-
-- Fixed HTML template issues
-- Added full authentication system
-- Integrated frontend with backend
-- Implemented SQLite DB
-- Improved project structure
-- Application fully functional
-
----
-
-## Authors
+# 👨‍💻 Authors
 
 - Riddhima Rajput
 - Diksha Sharma
 - Charvi Mittal
 
-````
+---
+
+# 🚀 Future Enhancements
+
+- Real-time sensor streaming (IoT integration)
+- Docker containerization
+- CI/CD deployment pipeline
+- Cloud hosting (AWS / Render)
+- Graph-based RUL visualization
+- Model retraining automation
 
 ---
 
-## ✅ What you should do now
+# ⭐ Project Status
 
-1. Replace your README with this
-2. Then run:
-```bash
-git add README.md
-git commit -m "Resolved merge conflict and updated README"
-git push
-````
+✔ Fully functional ML + Web App
+✔ Authentication system integrated
+✔ Fixed prediction pipeline issues
+✔ Deployment-ready architecture
+
+---
+
+```
+
+---
+
+
+
+```
